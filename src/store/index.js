@@ -1,5 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import countReducer from '../reducers/count'
+import countReducer from '../reducers/count';
+import movieDataReducer from '../reducers/data';
+
 export default configureStore({
-    reducer: countReducer
-})
+  reducer: {
+    count: countReducer,
+    movieData: movieDataReducer
+  }
+});

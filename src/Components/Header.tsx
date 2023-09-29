@@ -2,12 +2,10 @@ import { BiSearchAlt2, BiSolidHeart } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { BsPerson } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
-import { like } from "../reducers/count";
 
 export default function Header() {
-  const likes: number = useSelector((state: any) => state.count);
+  const likes: any = useSelector((state: any) => state.count);
   const dispatch = useDispatch();
-
   return (
     <div className="container">
       <div className="h-20 shadow-md text-white items-center flex">
@@ -15,7 +13,7 @@ export default function Header() {
           <h1 className="text-3xl">BLOOM</h1>
         </div>
         <div className="flex ml-20 w-full justify-between">
-          <div className="w-[450px] h-11 flex items-center overflow-hidden rounded-sm">
+          <div className="w-[450px] h-11 flex items-center overflow-hidden rounded-3xl">
             <button className="w-14 border border-red-600 flex justify-center items-center text-center h-full p-0 m-0 bg-red-600">
               <BiSearchAlt2 />
             </button>
@@ -39,9 +37,10 @@ export default function Header() {
             </Link>
             <Link to="" className="relative">
               <BiSolidHeart />
-              <p className="text-sm absolute top-1/2 left-5">{likes}</p>
+              <p className="text-sm absolute top-1/2 left-5">{likes.count}</p>
             </Link>
-            <button onClick={() => dispatch(like())}>+</button> {/* Обратите внимание на () после like */}
+            
+          
           </div>
         </div>
       </div>
