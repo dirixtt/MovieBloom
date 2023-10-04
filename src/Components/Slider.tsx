@@ -51,12 +51,12 @@ export default function Slider() {
             <SwiperSlide className="shadow-md" key={item.id}>
               <div>
                 <img
-                  className="w-full rounded-2xl overflow-hidden h-96 object-cover"
+                  className="w-full rounded-2xl overflow-hidden h-96 "
                   src={`https://image.tmdb.org/t/p/w500/${item.backdrop_path}`}
                   alt=""
                 />
                 <p className="text-white gap-2 flex rounded-s-none items-center bg-red-500 rounded-3xl px-3 py-1 text-xl absolute top-5 ">
-                  {item.title} | {item.vote_average} <AiFillStar />
+                  {item.title} | {item.vote_average.toFixed(1)} <AiFillStar />
                 </p>
                 <button className="text-white gap-2 flex items-center bg-red-500 rounded-3xl px-3 py-1 text-xl absolute top-16 rounded-s-none ">
                   <HiPlay />

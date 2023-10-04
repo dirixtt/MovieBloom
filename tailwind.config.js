@@ -5,12 +5,16 @@ export default {
     "./src/**/*.{html,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
-    container: {
-      center: true,
-      padding: '2rem',
+    extend: {
+      boxShadow: {
+        '3xl': '0px 0px 50px 0px rgba(0, 0, 0, 0.3)',
+      },
+      container: {
+        center: true,
+        padding: '2rem',
+      },
     },
-  },
-  plugins: [],
+    plugins: [],
+  }
 }
 
