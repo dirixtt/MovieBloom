@@ -1,16 +1,18 @@
 import { BiSearchAlt2, BiSolidHeart } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { BsPerson } from "react-icons/bs";
 import { useSelector } from "react-redux";
 
 export default function Header() {
   const likes: any = useSelector((state: any) => state.count);
-  const linkStyle = "hover:bg-white/10 px-3 duration-300 h-full flex rounded-md justify-center items-center"
+  const activeLink = "bg-white/10 px-3 duration-300 h-full flex rounded-md justify-center items-center"
+  const linkStyle =
+    "hover:bg-white/10 px-3 duration-300 h-full flex rounded-md justify-center items-center";
   return (
-    <div className="container">
-      <div className="h-20 shadow-md text-white justify-between w-full items-center flex">
+    <div className=" shadow-md">
+      <div className="h-20 container text-white justify-between w-full items-center flex">
         <div>
-          <h1 className="text-3xl">BLOOM</h1>
+          <Link to="/" className="text-3xl">BLOOM</Link>
         </div>
         <div className="flex ">
           {/* <div className="w-[450px] h-11 flex items-center overflow-hidden rounded-md">
@@ -25,23 +27,37 @@ export default function Header() {
           </div> */}
           <ul className="flex h-[55px] items-center">
             <li className="gap-5 2xl:gap-14 flex h-full justify-center items-center">
-              <Link className={linkStyle} to="">Movies</Link>
-              <Link className={linkStyle} to="">About Us</Link>
-              <Link className={linkStyle} to="">Contact Us</Link>
-              <Link className={linkStyle} to="">Movies</Link>
+              <NavLink
+                className={(isActive:any) =>
+                   isActive ? `${activeLink}  ` : `${linkStyle} `
+                }
+                to="/movies"
+              >
+                Movies
+              </NavLink>
+              <NavLink  className={(isActive:any) =>
+                   isActive ? `${activeLink}  ` : `${linkStyle} `
+                } to="/about">
+                About Us
+              </NavLink>
+              <NavLink className={linkStyle} to="">
+                Contact Us
+              </NavLink>
+              <NavLink className={linkStyle} to="">
+                Movies
+              </NavLink>
             </li>
           </ul>
           <div className="flex text-2xl ml-10 items-center gap-6">
-            <Link to="">
+            <NavLink to="">
               <BsPerson />
-            </Link>
-            <Link to="" className="relative">
+            </NavLink>
+            <NavLink to="" className="relative">
               <BiSolidHeart />
               <p className="text-sm absolute top-1/2 left-5">{likes.count}</p>
-            </Link>
-            
+            </NavLink>
+
             <BiSearchAlt2 />
-          
           </div>
         </div>
       </div>

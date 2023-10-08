@@ -10,6 +10,7 @@ export default function Home() {
         <Header/>
         <Slider/>
         <Popular/>
+    
         <Tv/>
         <Footer/>
     </div>

@@ -8,14 +8,15 @@ import { AiFillStar } from "react-icons/ai";
 import { HiPlay } from "react-icons/hi";
 import { BiSolidHeart, BiHeart } from "react-icons/bi";
 import { like } from "../reducers/count";
-
 import { Autoplay, EffectFade } from "swiper/modules";
+import Loader from "./Loader";
+
 export default function Slider() {
   const dispatch = useDispatch();
   const movieData = useSelector((state: any) => state.movieData);
   const [liked, setLiked] = useState(true);
   const handleLike = () => {
-    setLiked(!liked)
+    setLiked(!liked);
     dispatch(like());
   };
   useEffect(() => {
@@ -23,7 +24,11 @@ export default function Slider() {
   }, [dispatch]);
 
   if (movieData.loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="py-40">
+        <Loader />;
+      </div>
+    );
   }
 
   if (movieData.error) {
@@ -33,7 +38,7 @@ export default function Slider() {
   const results = movieData.data ? movieData.data.results : [];
 
   return (
-    <div className="bg-[#171818] pt-5 container  text-white">
+    <div className="bg-[#171818] mt-5 container  text-white">
       {results.length > 0 ? (
         <Swiper
           spaceBetween={50}
@@ -51,7 +56,7 @@ export default function Slider() {
             <SwiperSlide className="shadow-md" key={item.id}>
               <div>
                 <img
-                  className="w-full rounded-2xl overflow-hidden h-96 "
+                  className="w-full rounded-2xl object-cover overflow-hidden h-96 "
                   src={`https://image.tmdb.org/t/p/w500/${item.backdrop_path}`}
                   alt=""
                 />
@@ -73,7 +78,7 @@ export default function Slider() {
           ))}
         </Swiper>
       ) : (
-        <div>No movie data available.</div>
+        <Loader />
       )}
     </div>
   );

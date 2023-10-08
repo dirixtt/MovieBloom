@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 export default function Footer() {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -9,7 +10,6 @@ export default function Footer() {
           `https://api.themoviedb.org/3/genre/movie/list?language=en&api_key=1ca93d75b94136d96a48b22202fa8f52`
         );
         setData(response.data.genres);
-        console.log(response.data.genres);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -41,9 +41,9 @@ export default function Footer() {
           <h1 className="text-xl mb-3 font-medium">Top Categories</h1>
           <ul className="leading-8 flex gap-x-5  flex-col h-44 flex-wrap text-white/70">
             {data.slice(0, 10).map((i: Genre) => (
-              <li className="hover:text-white cursor-pointer" key={i.id}>
+              <Link to={`/genre/${i.id}`} className="hover:text-white cursor-pointer" key={i.id}>
                 {i.name}
-              </li>
+              </Link>
             ))}
           </ul>
         </div>

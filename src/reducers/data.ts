@@ -9,7 +9,7 @@ export const fetchMovieData = createAsyncThunk(
       const response = await axios.get(
         "https://api.themoviedb.org/3/trending/all/day?api_key=1ca93d75b94136d96a48b22202fa8f52"
       );
-      console.log("Request successful"); // Log when the request is successful
+      // console.log("Request successful"); // Log when the request is successful
       return response.data; // Return the response data, not the entire response object
     } catch (error) {
       console.error("Request failed", error); // Log if there's an error

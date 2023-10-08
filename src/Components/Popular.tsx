@@ -7,12 +7,13 @@ import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { AiOutlineArrowDown } from "react-icons/ai";
+import Loader from "./Loader";
 
 interface Movie {
   title: string;
   id: number;
   release_date: string;
-  backdrop_path: string;
+  poster_path: string;
 }
 
 export default function Popular() {
@@ -35,13 +36,20 @@ export default function Popular() {
   }, []);
 
   if (popular.length <= 0) {
-    return <div>Loading...</div>;
+    return (
+      <div className="py-40">
+        <Loader />;
+      </div>
+    );
   }
   const swiperRef1 = useRef;
 
   return (
     <div className=" text-white my-14">
-      <Link to="/popular" className="text-3xl font-semibold m-auto container flex font-sans ">
+      <Link
+        to="/popular"
+        className="text-3xl font-semibold m-auto container flex font-sans "
+      >
         Popular movies <IoIosArrowForward className="text-lg mt-3.5 ml-2" />{" "}
       </Link>
       <div className="relative ">
@@ -54,7 +62,7 @@ export default function Popular() {
             nextEl: ".swiper-button-next",
           }}
           autoplay={{
-            delay: 3000, // Set the delay in milliseconds (e.g., 3000ms = 3 seconds)
+            delay: 5000, // Set the delay in milliseconds (e.g., 3000ms = 3 seconds)
           }}
           onBeforeInit={(swiper) => {
             swiperRef1.current = swiper;
@@ -64,20 +72,27 @@ export default function Popular() {
         >
           {popular.map((movie: Movie, index: number) => (
             <SwiperSlide
-              className="text-white flex flex-col items-center justify-center group shadow-2xl duration-200  max-w-[275px]"
+              className="flex items-center"
               key={index}
             >
-              <img
-                className="group-hover:shadow-[#505454] w-full duration-300 h-[320px] rounded-xl object-cover group-hover:scale-105 shadow-3xl"
-                src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-                alt=""
-              />
-              <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3 bg-[#171818] ">
-                <div>
-                  <p>Title: {movie.title}</p>
-                  <p>Released: {moment(movie.release_date).format("LL")}</p>
+              <Link className="text-white flex flex-col items-center justify-center group shadow-2xl duration-200 w-[275px]" to={`/movie/${movie.id}`}>
+                <img
+                  className="group-hover:shadow-[#505454] w-full duration-300 h-[320px] rounded-xl object-cover group-hover:scale-105 shadow-3xl"
+                  src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                  alt=""
+                />
+                <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3 bg-[#171818] ">
+                  <div>
+                    <p>
+                      Title:{" "}
+                      {movie.title.length >= 15
+                        ? movie.title.slice(0, 15) + "..."
+                        : movie.title}
+                    </p>
+                    <p>Date: {moment(movie.release_date).format("LL")}</p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
