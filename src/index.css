@@ -1,9 +1,19 @@
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  /* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&display=swap'); */
-  body{
-    font-family: 'Montserrat', sans-serif;
-    background: #171818;
-  }
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&display=swap'); */
+body {
+  font-family: "Montserrat", sans-serif;
+  background: #171818;
+}
+.MuiTableRow-root {
+  background-color: rgba(0, 0, 0, 0.849);
+  color: white;
+  border: 1px solid white;
+  font-family: "Courier New", Courier, monospace !important;
+  overflow: hidden !important;
+}
+.MuiTableCell-root {
+  color: white !important;
+}

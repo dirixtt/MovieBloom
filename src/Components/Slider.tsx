@@ -1,6 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { fetchMovieData } from "../reducers/data";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-fade";
@@ -10,36 +9,38 @@ import { BiSolidHeart, BiHeart } from "react-icons/bi";
 import { like } from "../reducers/count";
 import { Autoplay, EffectFade } from "swiper/modules";
 import Loader from "./Loader";
+import axios from "axios";
 
 export default function Slider() {
   const dispatch = useDispatch();
-  const movieData = useSelector((state: any) => state.movieData);
   const [liked, setLiked] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [movieData, setMovieData] = useState<any>([]);
+
   const handleLike = () => {
     setLiked(!liked);
     dispatch(like());
   };
+
   useEffect(() => {
-    dispatch(fetchMovieData());
-  }, [dispatch]);
-
-  if (movieData.loading) {
-    return (
-      <div className="py-40">
-        <Loader />;
-      </div>
-    );
-  }
-
-  if (movieData.error) {
-    return <div>Error: {movieData.error.message}</div>;
-  }
-
-  const results = movieData.data ? movieData.data.results : [];
-
+    const fetchData = async() => {
+      try {
+        setLoading(true);
+        const response: any = await axios.get(
+          "https://film24-org-by-codevision.onrender.com/api/movies/random/all"
+        );
+        setMovieData(response.data)
+      } catch (error) {
+        console.error("Login failed", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData()
+  });
   return (
     <div className="bg-[#171818] mt-5 container  text-white">
-      {results.length > 0 ? (
+      {movieData?.length > 0 || !loading ? (
         <Swiper
           spaceBetween={50}
           slidesPerView={1}
@@ -47,21 +48,22 @@ export default function Slider() {
           effect={"fade"}
           modules={[EffectFade, Autoplay]}
           autoplay={{
-            delay: 3000,
+            delay: 550,
             disableOnInteraction: false,
           }}
           className="mySwiper"
+          
         >
-          {results.map((item: any) => (
-            <SwiperSlide className="shadow-md" key={item.id}>
+          {movieData.map((item: any, index: number) => (
+            <SwiperSlide className="shadow-md" key={index}>
               <div>
                 <img
                   className="w-full rounded-2xl object-cover overflow-hidden h-96 "
-                  src={`https://image.tmdb.org/t/p/w500/${item.backdrop_path}`}
+                  src={`${item.titleImage.url}`}
                   alt=""
                 />
                 <p className="text-white gap-2 flex rounded-s-none items-center bg-red-500 rounded-3xl px-3 py-1 text-xl absolute top-5 ">
-                  {item.title} | {item.vote_average.toFixed(1)} <AiFillStar />
+                  {item.name} | {item.rate} <AiFillStar />
                 </p>
                 <button className="text-white gap-2 flex items-center bg-red-500 rounded-3xl px-3 py-1 text-xl absolute top-16 rounded-s-none ">
                   <HiPlay />

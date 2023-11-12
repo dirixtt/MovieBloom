@@ -11,28 +11,37 @@ export default function MovieDetails() {
   const { id } = useParams(); // Access the 'id' parameter from the URL
   const [details, setDetails] = useState<Details>();
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState<any>();
   const [userRating, setUserRating] = useState<number | null>(null);
 
   interface Details {
     backdrop_path: string;
-    poster_path: string;
-    original_title: string;
-    runtime: number;
+    image: any;
+    name: string;
+    time: number;
     budget: number;
     genres: Genres[];
-    overview: string;
-    spoken_languages: object[];
-    release_date: string;
-    vote_average: number;
+    desc: string;
+    language: object[];
+    year: string;
+    rate: number;
   }
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/${id}?api_key=1ca93d75b94136d96a48b22202fa8f52`
+          `https://film24-org-by-codevision.onrender.com/api/movies/${id}`
         );
         setDetails(response.data);
         setLoading(false); // Set loading to false once data is fetched
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      try {
+        const response = await axios.get(
+          `https://film24-org-by-codevision.onrender.com/api/languages/${details?.language}`
+        );
+        setLanguage(response.data.name)
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -86,17 +95,17 @@ export default function MovieDetails() {
             <div className="container items-center flex justify-start">
               <div className="">
                 <img
-                  className="h-[500px] rounded-xl w-[350px]"
-                  src={`https://image.tmdb.org/t/p/w500/${details?.poster_path}`}
+                  className="h-[500px] rounded-xl object-cover w-[350px]"
+                  src={details?.image.url}
                   alt=""
                 />
               </div>
               <div className="text-white text-md   ml-10">
-                <h1 className="text-3xl mb-5">{details?.original_title}</h1>
+                <h1 className="text-3xl mb-5">{details?.name}</h1>
                 <ul className="flex gap-5 text-white/50 ">
-                  <li>{details?.runtime} min</li>
+                  <li>{details?.time} min</li>
                   <li>{details?.budget}$</li>
-                  <li className="flex gap-3">
+                  {/* <li className="flex gap-3">
                     {details?.genres.map((i: Genres) => (
                       <li key={i.id}>
                         <Link
@@ -107,26 +116,18 @@ export default function MovieDetails() {
                         </Link>
                       </li>
                     ))}
-                  </li>
+                  </li> */}
                 </ul>
-                <p className="my-5 w-[500px]">{details?.overview}</p>
+                <p className="my-5 w-[500px]">{details?.desc}</p>
                 <ul>
                   <li>
-                    Til:{" "}
-                    {details?.spoken_languages.map(
-                      (i: any, index: number, array: any[]) => (
-                        <span key={i.iso_639_1} className="mx-1">
-                          {i.english_name}
-                          {index < array.length - 1 && ","}
-                        </span>
-                      )
-                    )}
+                    Til: <span className="mx-1">{language}</span>
                   </li>
                   <li>
                     Taqdimot kuni:{" "}
-                    <span>{moment(details?.release_date).format("LL")}</span>{" "}
+                    <span>{details?.year}</span>{" "}
                   </li>
-                  <li>Taqdimot kuni: {details?.vote_average.toFixed(1)}</li>
+                  <li>Baho: {details?.rate}</li>
                 </ul>
               </div>
             </div>
@@ -136,7 +137,7 @@ export default function MovieDetails() {
             <div className="bg-[#1f2020] py-14 justify-center mt-6 rounded w-full flex-row md:flex">
               <div className="w-[45%]">
                 <h1 className="text-2xl font-semibold">
-                  Reaview of "{details?.original_title}"
+                  Reaview of "{details?.name}"
                 </h1>
                 <p className="w-[70%] my-5 text-white/50">
                   Write a review for this movie. It will be posted on this page.

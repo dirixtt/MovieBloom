@@ -19,18 +19,18 @@ export default function Movies() {
   const [listGenres, setListGanres] = useState<object[]>([]);
   const genres: any[] = listGenres;
   const selectedOption = useSelector((state: any) => state.CustomSelect.selectedOption);
-  console.log(selectedOption)
+  console.log(selectedOption, "hi")
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=1ca93d75b94136d96a48b22202fa8f52${selectedOption ? `&with_genres=${selectedOption.id}` : ""}`
+          `https://film24-org-by-codevision.onrender.com/api/movies`
         );
-        console.log("Request successful");
+        console.log("Request successful", response.data.movies);
         // console.log(response.data.results);
-        setData(response.data.results);
-        return response.data;
+        setData(response.data.movies);
+        return response.data.movies;
       } catch (error) {
         console.error("Request failed", error);
         throw error;
@@ -39,27 +39,27 @@ export default function Movies() {
     fetch();
   }, [page]); // <-- Use [page] as the dependency
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/genre/movie/list?language=en&api_key=1ca93d75b94136d96a48b22202fa8f52`
-        );
-        setListGanres(response.data.genres);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `https://api.themoviedb.org/3/genre/movie/list?language=en&api_key=1ca93d75b94136d96a48b22202fa8f52`
+  //       );
+  //       setListGanres(response.data.genres);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   interface Movie {
-    original_name: string;
+    name: string;
     original_title: string;
-    id: number;
+    _id: number;
     release_date: string;
-    poster_path: string;
+    image: any;
   }
   const prevPage = async () => {
     try {
@@ -114,13 +114,13 @@ export default function Movies() {
           {data.length > 0 ? (
             data.map((movie: Movie, index: number) => (
               <Link
-                to={`/movie/${movie.id}`}
+                to={`/movie/${movie._id}`}
                 className="text-white flex flex-col items-center relative justify-center group shadow-2xl duration-200 w-[100px] xl:w-[220px] 2xl:w-[275px]"
                 key={index}
               >
                 <img
                   className="group-hover:shadow-[#505454] w-full duration-300 h-[215px] xl:h-[280px] 2xl:h-[320px] rounded-xl object-cover group-hover:scale-105 shadow-3xl"
-                  src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                  src={movie.image.url}
                   alt=""
                 />
                 {/* <div className="w-full group-hover:bg-black/70 group-hover:scale-105 duration-300 h-[215px] xl:h-[280px] 2xl:h-[320px] rounded-xl absolute top-0"></div> */}
@@ -128,10 +128,10 @@ export default function Movies() {
                   <div className="xl:text-[15px] 2xl:text-md">
                     <p>
                       Title:{" "}
-                      {movie.original_name
-                        ? movie.original_name.length >= 15
-                          ? movie.original_name.slice(0, 15) + "..."
-                          : movie.original_name
+                      {movie.name
+                        ? movie.name.length >= 15
+                          ? movie.name.slice(0, 15) + "..."
+                          : movie.name
                         : movie.original_title
                         ? movie.original_title.length >= 15
                           ? movie.original_title.slice(0, 15) + "..."

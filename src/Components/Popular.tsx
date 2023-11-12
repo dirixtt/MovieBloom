@@ -2,7 +2,6 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router-dom";
-import moment from "moment";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
@@ -10,10 +9,10 @@ import { AiOutlineArrowDown } from "react-icons/ai";
 import Loader from "./Loader";
 
 interface Movie {
-  title: string;
-  id: number;
-  release_date: string;
-  poster_path: string;
+  name: string;
+  _id: number;
+  year: string;
+  image: any;
 }
 
 export default function Popular() {
@@ -23,10 +22,9 @@ export default function Popular() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/popular?api_key=1ca93d75b94136d96a48b22202fa8f52`
+          `https://film24-org-by-codevision.onrender.com/api/movies/rated/top`
         );
-
-        setPopular(response.data.results);
+        setPopular(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -34,7 +32,6 @@ export default function Popular() {
 
     fetchData();
   }, []);
-
   if (popular.length <= 0) {
     return (
       <div className="py-40">
@@ -45,7 +42,7 @@ export default function Popular() {
   const swiperRef1 = useRef;
 
   return (
-    <div className=" text-white my-14">
+    <div className=" text-white my-14 ">
       <Link
         to="/popular"
         className="text-3xl font-semibold m-auto container flex font-sans "
@@ -67,29 +64,29 @@ export default function Popular() {
           onBeforeInit={(swiper) => {
             swiperRef1.current = swiper;
           }}
-          className="h-[570px] flex items-center"
+          className="h-[570px] px-[60px] flex items-center"
           modules={[Navigation, Autoplay]} // Add Autoplay module here
         >
           {popular.map((movie: Movie, index: number) => (
-            <SwiperSlide
-              className="flex items-center"
-              key={index}
-            >
-              <Link className="text-white flex flex-col items-center justify-center group shadow-2xl duration-200 w-[275px]" to={`/movie/${movie.id}`}>
+            <SwiperSlide className="flex items-center min-w-[300px] xl:min-w-[260px] 2xl:w-[350px]" key={index}>
+              <Link
+                className="text-white flex flex-col items-center justify-center group shadow-2xl w-full duration-200 "
+                to={`/movie/${movie._id}`}
+              >
                 <img
-                  className="group-hover:shadow-[#505454] w-full duration-300 h-[320px] rounded-xl object-cover group-hover:scale-105 shadow-3xl"
-                  src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                  className="group-hover:shadow-[#505454] w-full duration-300 2xl:h-[380px] h-[320px] rounded-xl object-cover group-hover:scale-105 shadow-3xl"
+                  src={`${movie.image.url}`}
                   alt=""
                 />
                 <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3 bg-[#171818] ">
                   <div>
                     <p>
                       Title:{" "}
-                      {movie.title.length >= 15
-                        ? movie.title.slice(0, 15) + "..."
-                        : movie.title}
+                      {movie.name.length >= 15
+                        ? movie.name.slice(0, 15) + "..."
+                        : movie.name}
                     </p>
-                    <p>Date: {moment(movie.release_date).format("LL")}</p>
+                    <p>Date: {movie.year}</p>
                   </div>
                 </div>
               </Link>

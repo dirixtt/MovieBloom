@@ -49,11 +49,11 @@ export default function Footer() {
         </div>
         <div>
           <h1 className="text-xl mb-3 font-medium">About us</h1>
-          <ul className="leading-8 text-white/70">
-            <li className="hover:text-white cursor-pointer">Contacts</li>
-            <li className="hover:text-white cursor-pointer">Support</li>
-            <li className="hover:text-white cursor-pointer">Remove ads</li>
-            <li className="hover:text-white cursor-pointer">About Company</li>
+          <ul className="leading-8 flex flex-col text-white/70">
+            <Link to="/contact" className="hover:text-white cursor-pointer">Contacts</Link>
+            <Link to="/contact" className="hover:text-white cursor-pointer">Support</Link>
+            <Link to="/contact" className="hover:text-white cursor-pointer">Remove ads</Link>
+            <Link to="/about" className="hover:text-white cursor-pointer">About Company</Link>
           </ul>
         </div>
       </div>
