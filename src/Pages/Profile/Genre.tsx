@@ -4,7 +4,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { category, categoryFail } from "../../reducers/categories";
+import { genre, genreFail } from "../../reducers/genre";
 
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ import Loader from "../../Components/Loader";
 import moment from "moment";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import {Button, TextField } from "@mui/material";
-export default function Category() {
+export default function Genre() {
   const [loading, setLoading] = useState<boolean>(false);
   const [creat, setCreat] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
@@ -36,12 +36,12 @@ export default function Category() {
     }
   };
   const dispatch = useDispatch();
-  const all = useSelector((state: any) => state.Category);
+  const all = useSelector((state: any) => state.Ganre);
   const fetch = async () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://film24-org-by-codevision.onrender.com/api/categories`,
+        `https://film24-org-by-codevision.onrender.com/api/genres`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,18 +49,18 @@ export default function Category() {
         }
       );
       setCateg(response.data);
-      dispatch(category(response.data));
+      dispatch(genre(response.data));
       setLoading(false);
     } catch (error: any) {
-      dispatch(categoryFail(error.data));
+      dispatch(genreFail(error.data));
       setError(error);
     }
   };
   useEffect(() => {
     fetch();
   }, [token]);
-  function createData(id: number, date: any, updated: any, title: string) {
-    return { id, date, title, updated };
+  function createData(id: number, date: any, updated: any, name: string) {
+    return { id, date, name, updated };
   }
 
   const rows: any = categ?.map((i: any) =>
@@ -68,14 +68,14 @@ export default function Category() {
       i._id,
       moment(i.createdAt).format("MMM. D. YYYY"),
       moment(i.updatedAt).format("MMM. D. YYYY"),
-      i.title
+      i.name
     )
   );
   const handleDelete = async (id: number) => {
     try {
       setLoading(true);
       const response = await axios.delete(
-        `https://film24-org-by-codevision.onrender.com/api/categories/${id}`,
+        `https://film24-org-by-codevision.onrender.com/api/genres/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -105,13 +105,13 @@ export default function Category() {
       const response = await axios.request({
         method: "post",
         maxBodyLength: Infinity,
-        url: "https://film24-org-by-codevision.onrender.com/api/categories",
+        url: "https://film24-org-by-codevision.onrender.com/api/genres",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         data: {
-          title: name.trim(),
+          name: name.trim(),
         },
       });
       if (response.status === 200 || 201) {
@@ -139,13 +139,13 @@ export default function Category() {
       const response = await axios.request({
         method: "put",
         maxBodyLength: Infinity,
-        url: `https://film24-org-by-codevision.onrender.com/api/categories/${id}`,
+        url: `https://film24-org-by-codevision.onrender.com/api/genres/${id}`,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         data: {
-          title: name.trim(),
+          name: name.trim(),
         },
       });
       if (response.status === 200 || 201) {
@@ -165,7 +165,7 @@ export default function Category() {
     setId(id);
     filtered = all.categ.find((i: any) => i._id === id);
     console.log(filtered._id);
-    setName(filtered.title);
+    setName(filtered.name);
   };
   return (
     <>
@@ -190,7 +190,7 @@ export default function Category() {
               onClick={() => setCreat(true)}
               className="bg-red-600 px-2 rounded"
             >
-              Create Category
+              Create genre
             </button>
           </div>
           <TableContainer className="w-full" component={Paper}>
@@ -204,7 +204,7 @@ export default function Category() {
                   <TableCell align="left">ID</TableCell>
                   <TableCell align="left">DATE</TableCell>
                   <TableCell align="left">UPDATED</TableCell>
-                  <TableCell align="left">TITLE</TableCell>
+                  <TableCell align="left">NAME</TableCell>
                   <TableCell align="left">ACTION</TableCell>
                 </TableRow>
               </TableHead>
@@ -218,7 +218,7 @@ export default function Category() {
                       <TableCell align="left">{row.id}</TableCell>
                       <TableCell align="left">{row.date}</TableCell>
                       <TableCell align="left">{row.updated}</TableCell>
-                      <TableCell align="left">{row.title}</TableCell>
+                      <TableCell align="left">{row.name}</TableCell>
                       <TableCell className="relative" align="center">
                         <button
                           className="text-xl"

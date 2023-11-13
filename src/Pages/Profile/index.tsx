@@ -10,6 +10,7 @@ import ChangePass from "./ChangePass";
 import Dashboard from "./Dashboard";
 import Category from "./Category";
 import Edit from "./Edit";
+import Genre from "./Genre";
 
 export default function Index() {
   const { user, logged, userLoading, userError } = FetchUser();
@@ -30,18 +31,19 @@ export default function Index() {
   return (
     <>
       <Header />
-      <div className="container flex">
+      <div className="container min-h-[500px] flex">
         <div className="w-1/4">
           <Sidebar />
         </div>
         <div className="w-full">
-          <div className="container min-h-[350px] ml-10 py-5 my-10 rounded border bg-[#1f2020]">
+          <div className="container ml-10 py-5 my-10 rounded border bg-[#1f2020]">
             <Routes>
               <Route index element={<UpdateProfile />} />
               <Route path="/favourite" element={<Favourite />} />
               <Route path="/changepassword" element={<ChangePass />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/categoties" element={<Category />} />
+              <Route path="/genre" element={<Genre />} />
               <Route path="/dashboard/edit/:id" element={<Edit />} />
             </Routes>
           </div>

@@ -24,6 +24,14 @@ export default function Sidebar() {
         </NavLink>
         <NavLink
           className={({ isActive }) =>
+            isActive ? active : noActive
+          }
+          to="./genre"
+        >
+          Genre
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
           isActive ? active : noActive
           }
           to="./"
