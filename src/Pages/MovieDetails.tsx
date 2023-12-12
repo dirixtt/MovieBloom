@@ -6,6 +6,7 @@ import moment from "moment";
 import Footer from "../Components/Footer";
 import { AiFillStar } from "react-icons/ai";
 import { Alert } from "@mui/material";
+import { BiHeart } from "react-icons/bi";
 
 export default function MovieDetails() {
   const { id } = useParams(); // Access the 'id' parameter from the URL
@@ -106,9 +107,9 @@ export default function MovieDetails() {
       setMsg(response?.message);
       setLoading1(false); // Set loading to false once data is fetched
     } catch (error: any) {
-      setType("info")
+      setType("info");
       setMsg(error?.response.data.message);
-      setLoading1(false)
+      setLoading1(false);
     }
   };
 
@@ -127,12 +128,15 @@ export default function MovieDetails() {
             }}
           >
             <div className="container items-center flex justify-start">
-              <div className="">
+              <div className="relative rounded-xl overflow-hidden">
                 <img
-                  className="h-[500px] rounded-xl object-cover w-[350px]"
+                  className="h-[500px]  object-cover w-[350px]"
                   src={details?.image.url}
                   alt=""
                 />
+                <button className="text-white text-xl top-0 right-0 shadow-md p-2 absolute bg-red-600">
+                  <BiHeart/>
+                </button>
               </div>
               <div className="text-white text-md   ml-10">
                 <h1 className="text-3xl mb-5">{details?.name}</h1>

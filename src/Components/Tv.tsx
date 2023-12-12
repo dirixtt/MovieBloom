@@ -14,7 +14,6 @@ interface Movie {
 
 export default function Tv() {
   const [popular, setPopular] = useState<Movie[]>([]);
-  const [more, showMore] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,7 +21,7 @@ export default function Tv() {
         const response = await axios.get(
           `https://film24-org-by-codevision.onrender.com/api/movies/rated/top`
         );
-          console.log(response.data)
+        console.log(response.data);
         setPopular(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -45,24 +44,8 @@ export default function Tv() {
         Trend movies <IoIosArrowForward className="text-lg mt-3.5 ml-2" />{" "}
       </Link>
       <div className="flex flex-wrap justify-between mt-10 gap-y-10 ">
-        {(more ? popular : popular.slice(0, 5)).map(
+        {(popular.slice(0, 5)).map(
           (movie: Movie, index: number) => (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <Link
               to={`/movie/${movie._id}`}
               className="text-white flex flex-col items-center relative justify-center group shadow-2xl duration-200 w-[100px] xl:w-[220px] 2xl:w-[275px]"
@@ -86,27 +69,9 @@ export default function Tv() {
                 </div>
               </div>
             </Link>
-
-
-
-
-
-
-
-
-
-
           )
         )}
       </div>
-      {popular.length > 4 && (
-        <button
-          onClick={() => showMore(!more)}
-          className="active:scale-95 hover:shadow-[#1f2020] shadow-3xl duration-300 mt-10 py-2 font-semibold rounded  container m-auto bg-[#1f2020]"
-        >
-          {more ? "Hide" : "Show more"}
-        </button>
-      )}
     </div>
   );
 }

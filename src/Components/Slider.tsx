@@ -45,14 +45,13 @@ export default function Slider() {
           spaceBetween={50}
           slidesPerView={1}
           loop={true}
-          effect={"fade"}
-          modules={[EffectFade, Autoplay]}
-          autoplay={{
-            delay: 3000,
-            disableOnInteraction: true,
-          }}
-          className="mySwiper"
-          
+        
+          // effect={"fade"}
+          // modules={[EffectFade]}
+          // autoplay={{
+          //   delay: 3000,
+          //   disableOnInteraction: true,
+          // }}  
         >
           {movieData.map((item: any, index: number) => (
             <SwiperSlide className="shadow-md" key={index}>

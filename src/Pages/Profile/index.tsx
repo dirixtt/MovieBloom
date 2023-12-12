@@ -32,8 +32,8 @@ export default function Index() {
   return (
     <>
       
-      <div className="container h-full min-h-[600px] flex">
-        <div className="w-1/4 h-full">
+      <div className="container h-auto min-h-[600px] flex">
+        <div className="w-1/4 h-auto">
           <Sidebar />
         </div>
         <div className="w-full">
