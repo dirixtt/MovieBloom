@@ -11,28 +11,29 @@ import Dashboard from "./Dashboard";
 import Category from "./Category";
 import Edit from "./Edit";
 import Genre from "./Genre";
+import Users from "./Users";
+import Casts from "./Casts";
+import CreateMovie from "./CreateMovie";
+import Movies from "./Movies";
+
 
 export default function Index() {
   const { user, logged, userLoading, userError } = FetchUser();
-
-  // const token: string = localStorage.get("token", user.token);
-  // if (token) {
-  //   localStorage.setItem("token", user.token);
-  // }
+  const token = localStorage.getItem("token");
 
   if (userLoading) {
     return <Loader />;
   }
 
-  if ((!user && !logged) || userError) {
+  if ((!user && !logged) || userError || !token) {
     return <Navigate to="/login" />;
   }
 
   return (
     <>
-      <Header />
-      <div className="container min-h-[500px] flex">
-        <div className="w-1/4">
+      
+      <div className="container h-full min-h-[600px] flex">
+        <div className="w-1/4 h-full">
           <Sidebar />
         </div>
         <div className="w-full">
@@ -42,8 +43,12 @@ export default function Index() {
               <Route path="/favourite" element={<Favourite />} />
               <Route path="/changepassword" element={<ChangePass />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/categoties" element={<Category />} />
+              <Route path="/categories" element={<Category />} />
               <Route path="/genre" element={<Genre />} />
+              <Route path="/movies" element={<Movies />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/createmovie" element={<CreateMovie />} />
+              <Route path="/casts" element={<Casts />} />
               <Route path="/dashboard/edit/:id" element={<Edit />} />
             </Routes>
           </div>
@@ -53,3 +58,4 @@ export default function Index() {
     </>
   );
 }
+

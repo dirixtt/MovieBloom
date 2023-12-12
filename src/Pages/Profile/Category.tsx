@@ -4,7 +4,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { category, categoryFail } from "../../reducers/categories";
+import { Categories, categoryFail } from "../../reducers/categories";
 
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
@@ -49,7 +49,7 @@ export default function Category() {
         }
       );
       setCateg(response.data);
-      dispatch(category(response.data));
+      dispatch(Categories(response.data));
       setLoading(false);
     } catch (error: any) {
       dispatch(categoryFail(error.data));

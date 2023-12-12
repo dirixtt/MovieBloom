@@ -19,20 +19,11 @@ export default function UpdateProfile() {
   const { user, userLoading, userError } = FetchUser();
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(false);
-  const [img, setImg] = useState(null);
 
   const [credentials] = useState({
     fullName: user?.fullName,
     email: user?.email,
   });
-
-  function handleChange(e: any) {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl: any = URL.createObjectURL(file);
-      setImg(imageUrl);
-    }
-  }
 
   async function handleDelete() {
     try {
@@ -93,25 +84,6 @@ export default function UpdateProfile() {
             <Form>
               <h1 className="text-white text-xl font-semibold">Profile</h1>
               <div>
-                <div className="flex justify-between mt-5">
-                  <div className="border text-white w-[80%]">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="w-[150px] flex flex-col h-[150px]">
-                    {img && (
-                      <img
-                        src={img}
-                        alt="Selected"
-                        className="w-full h-full object-cover"
-                        style={{ maxWidth: "100%" }}
-                      />
-                    )}
-                  </div>
-                </div>
                 <div className="mt-5">
                   <ul className="flex justify-between w-[80%]">
                     <li>

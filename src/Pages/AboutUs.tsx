@@ -4,7 +4,7 @@ import Header from "../Components/Header";
 export default function AboutUs() {
   return (
     <div className="w-full">
-      <Header />
+      
       <div className="container w-full h-72 relative mt-10 rounded overflow-hidden">
         <img className="rounded-lg h-full" src="https://netflixo-ten.vercel.app/images/head.png" alt="" />
         <h1 className="absolute text-5xl z-20 h-full flex justify-center items-center font-semibold text-center inset-0  w-full  text-white">About</h1>

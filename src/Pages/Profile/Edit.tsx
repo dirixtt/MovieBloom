@@ -2,20 +2,11 @@ import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import Loader from "../../Components/Loader";
 
-import {
-  Alert,
-  Button,
-  FormControl,
-  Input,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Alert, Button, Input, TextField } from "@mui/material";
 import { BsFillCloudArrowUpFill } from "react-icons/bs";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Select, SelectProps } from "antd";
 export default function Edit() {
   const [Image, setImage] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<any>([]);
@@ -106,15 +97,10 @@ export default function Edit() {
   };
   useEffect(() => {
     fetchData();
+    console.log(data);
   }, [token]); // Include 'id' as a dependency so that it fetches data when 'id' changes
 
   const [selectedTags, setSelectedTags] = useState<any>([]);
-  const [selectedGanres, setSelectedGanres] = useState(
-    Array.isArray(data?.category) ? data?.category.map((i: any) => i._id) : []
-  );
-  const [selectedLanguages, setSelectedLanguages] = useState(
-    Array.isArray(data?.language) ? data?.language.map((i: any) => i._id) : []
-  );
 
   const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -127,7 +113,7 @@ export default function Edit() {
     whiteSpace: "nowrap",
     width: 1,
   });
-
+  const navigate = useNavigate();
   const handleEdit = async (e: any) => {
     e.preventDefault(); // Prevent the default form submission behavior
     if (handleValidation()) {
@@ -153,9 +139,11 @@ export default function Edit() {
         setError(error);
       } finally {
         setLoading(false);
+        setMsg("Your movie was successufulty updated");
+        navigate("/profile");
       }
-    }else{
-      setMsg("Error")
+    } else {
+      setMsg("validation");
     }
   };
 
@@ -190,31 +178,7 @@ export default function Edit() {
       setError(error);
     }
   };
-  const handleChange = (event: any) => {
-    const { value } = event.target;
-    setSelectedTags(value);
-    setFormValues({
-      ...formValues,
-      category: value,
-    });
-  };
-  const handleChangeGanre = (event: any) => {
-    const { value } = event.target;
-    setSelectedGanres(value);
-    setFormValues({
-      ...formValues,
-      genre: value,
-    });
-  };
-  const handleChangeLanguage = (event: any) => {
-    const { value } = event.target;
-    setSelectedLanguages(value);
 
-    setFormValues({
-      ...formValues,
-      language: value,
-    });
-  };
   const upload = async (e: any) => {
     setSelectedFile(e.target.files[0]);
     await uploadPhoto();
@@ -240,7 +204,7 @@ export default function Edit() {
 
     // Year validation
     const yearPattern = /^\d{4}$/;
-    if (!formValues.year.trim() || !yearPattern.test(formValues.year)) {
+    if (!formValues.year || !yearPattern.test(formValues.year)) {
       newErrors.year = "Enter a valid 4-digit year";
       valid = false;
     } else {
@@ -248,8 +212,7 @@ export default function Edit() {
     }
 
     // Time validation
-    const timePattern = /^\d{2}:\d{2}$/;
-    if (!formValues.time.trim() || !timePattern.test(formValues.time)) {
+    if (!formValues.time) {
       newErrors.time = "Enter a valid time in HH:mm format";
       valid = false;
     } else {
@@ -257,9 +220,39 @@ export default function Edit() {
     }
 
     setValidation(newErrors);
+    console.log(validation);
     return valid;
   };
+  const genresOpt: SelectProps["options"] = ganres
+    ? ganres.map((i: any) => ({
+        label: i.name, // Extract label from i.name
+        value: i._id, // Extract value from i._id
+      }))
+    : [{ label: "no options", value: "no options" }];
+  const defaultValue =
+    data && genresOpt
+      ? genresOpt.find((genre) => genre._id === data.genre._id)
+      : undefined;
 
+  <Select
+    mode="multiple"
+    allowClear
+    placeholder="Please select language"
+    size="large"
+    className="w-[100%] bg-white rounded"
+    onChange={(value: any) =>
+      setFormValues((prevValue: any) => ({
+        ...prevValue,
+        genre: value,
+      }))
+    }
+    options={genresOpt}
+    value={defaultValue}
+  />;
+  const defaultV:any =
+    data && genresOpt
+      ? genresOpt.find((genre) => genre._id === data.genre._id)
+      : undefined;
   return (
     <div>
       {movieid && category && languages && ganres ? (
@@ -305,6 +298,7 @@ export default function Edit() {
                 className="text-white w-[48%]"
                 required
                 label="year"
+                type="number"
                 variant="filled"
                 defaultValue={data.year}
                 onChange={(event) =>
@@ -315,6 +309,7 @@ export default function Edit() {
                 id="outlined-basic"
                 className="text-white  w-[48%]"
                 required
+                type="number"
                 label="Time"
                 variant="filled"
                 defaultValue={data.time}
@@ -338,83 +333,21 @@ export default function Edit() {
                   })
                 }
               />
-
-              <FormControl sx={{ width: "48%" }}>
-                <InputLabel id="demo-multiple-checkbox-label">
-                  Category
-                </InputLabel>
-                <Select
-                  labelId="demo-multiple-checkbox-label"
-                  id="demo-multiple-checkbox"
-                  multiple
-                  required
-                  value={selectedTags}
-                  onChange={handleChange}
-                  input={<OutlinedInput label="Category" />}
-                  renderValue={(selected) => {
-                    const selectedCategoryTitles = category
-                      .filter((c: any) => selected.includes(c._id))
-                      .map((c: any) => c.title);
-                    return selectedCategoryTitles.join(", ");
-                  }}
-                >
-                  {category.map((c: any) => (
-                    <MenuItem key={c._id} value={c._id}>
-                      {c.title}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl sx={{ width: "48%" }}>
-                <InputLabel id="demo-multiple-checkbox-label">Ganre</InputLabel>
-                <Select
-                  labelId="demo-multiple-checkbox-label"
-                  id="demo-multiple-checkbox"
-                  multiple
-                  required
-                  value={selectedGanres}
-                  onChange={handleChangeGanre}
-                  input={<OutlinedInput label="Tag" />}
-                  renderValue={(selected) => {
-                    const selectGanreTitle: any = ganres
-                      .filter((c: any) => selected.includes(c._id))
-                      .map((c: any) => c.name);
-                    return selectGanreTitle.join(", ");
-                  }}
-                >
-                  {ganres.map((c: any) => (
-                    <MenuItem key={c._id} value={c._id}>
-                      {c.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl sx={{ width: "48%" }}>
-                <InputLabel id="demo-multiple-checkbox-label">
-                  Language
-                </InputLabel>
-                <Select
-                  labelId="demo-multiple-checkbox-label"
-                  id="demo-multiple-checkbox"
-                  multiple
-                  required
-                  value={selectedLanguages}
-                  onChange={handleChangeLanguage}
-                  input={<OutlinedInput label="Tag" />}
-                  renderValue={(selected) => {
-                    const selectLanguageTitle: any = languages
-                      .filter((c: any) => selected.includes(c._id))
-                      .map((c: any) => c.name);
-                    return selectLanguageTitle.join(", ");
-                  }}
-                >
-                  {languages.map((c: any) => (
-                    <MenuItem key={c._id} value={c._id}>
-                      {c.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Please select genre"
+                size="large"
+                className="w-[100%] bg-white rounded"
+                onChange={(value: any) =>
+                  setFormValues((prevValue: any) => ({
+                    ...prevValue,
+                    genre: value,
+                  }))
+                }
+                defaultValue={defaultV}
+                options={genresOpt}
+              />
             </div>
             <button
               className="mt-5 w-full h-14 rounded text-2xl text-white font-[600] bg-purple-600 shadow-lg"
@@ -425,7 +358,7 @@ export default function Edit() {
             </button>
           </form>
           <div>
-            {/* <p>{errorr?.response.data.message}</p> */}
+            <p>{errorr?.response.data.message}</p>
             <button onClick={() => console.log(selectedTags)}>click</button>
           </div>
           <div className="absolute top-3 right-6">

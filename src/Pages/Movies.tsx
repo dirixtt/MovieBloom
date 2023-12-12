@@ -1,6 +1,4 @@
 import moment from "moment";
-import Header from "../Components/Header";
-import Select from "../Components/Select";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -16,8 +14,6 @@ export default function Movies() {
   // const rate: string[] = ["1 star", "2 stars"];
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState<number>(1);
-  const [listGenres, setListGanres] = useState<object[]>([]);
-  const genres: any[] = listGenres;
   const selectedOption = useSelector((state: any) => state.CustomSelect.selectedOption);
   console.log(selectedOption, "hi")
 
@@ -82,12 +78,12 @@ export default function Movies() {
   };
   return (
     <div>
-      <Header />
+      
       <div className="container">
         <ul className="flex w-full mt-10 items-center ">
-          <li className="w-[20%] px-4">
+          {/* <li className="w-[20%] px-4">
             <Select fetch={fetch} className="" options={genres} />
-          </li>
+          </li> */}
           {/* <li className="w-[20%] px-4">
             <Select options={languages} />
           </li>

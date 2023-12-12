@@ -2,8 +2,9 @@ import { configureStore } from "@reduxjs/toolkit";
 import countReducer from '../reducers/count';
 import CustomSelect from '../reducers/Customselect'
 import Login from '../reducers/Login'
-import Category from '../reducers/categories'
+import Categories from '../reducers/categories'
 import Ganre from '../reducers/genre'
+import Casts from '../reducers/casts'
 export default configureStore({
   reducer: {
     count: countReducer,
@@ -11,6 +12,7 @@ export default configureStore({
     CustomSelect: CustomSelect,
     Login: Login,
     Ganre: Ganre,
-    Category: Category,
+    Casts: Casts,
+    Categories: Categories,
   }
 });

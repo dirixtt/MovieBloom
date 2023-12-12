@@ -10,8 +10,10 @@ import Paper from "@mui/material/Paper";
 
 import Loader from "../../Components/Loader";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import { Alert } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import { Link } from "react-router-dom";
+
+import { Modal } from "antd";
 
 function createData(
   IMAGE: string, // Здесь добавлена запятая
@@ -25,15 +27,16 @@ function createData(
   return { id, IMAGE, name, CATEGORY, LANGUAGE, YEAR, HOURS };
 }
 
-export default function Dashboard() {
+export default function Movies() {
   const token = localStorage.getItem("token");
   const [msg, setMsg] = useState<any>();
 
   const [data, setData] = useState<any>(null);
   const [errorr, setError] = useState<any>(null);
+  const [deleteId, setDeleteId] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [isModalOpen, setIsModalOpen] = useState<any>(false);
   const [modalOpenIndex, setModalOpenIndex] = useState(-1);
   const handleModalToggle = (index: number) => {
     if (modalOpenIndex === index) {
@@ -44,9 +47,6 @@ export default function Dashboard() {
       setModalOpenIndex(index);
     }
   };
-  const [totalCategories, setTotalCategories] = useState<number>(0);
-  const [totalUsers, setTotalUsers] = useState<number>(0);
-  const [totalMovies, setTotalMovies] = useState<number>(0);
 
   const rows: any = data?.map((item: any) =>
     createData(
@@ -73,39 +73,7 @@ export default function Dashboard() {
       );
       setLoading(false);
       setData(response.data.movies);
-      setTotalMovies(response?.data.totalMovies);
       console.log(response.data);
-    } catch (error) {
-      setError(error);
-    }
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `https://film24-org-by-codevision.onrender.com/api/categories`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setLoading(false);
-      setTotalCategories(response.data.length);
-    } catch (error) {
-      setError(error);
-    }
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `https://film24-org-by-codevision.onrender.com/api/users`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setLoading(false);
-
-      setTotalUsers(response.data.length);
     } catch (error) {
       setError(error);
     }
@@ -114,62 +82,55 @@ export default function Dashboard() {
     fetchData();
   }, [token]); // Include 'id' as a dependency so that it fetches data when 'id' changes
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async () => {
     try {
       const response = await axios.delete(
-        `https://film24-org-by-codevision.onrender.com/api/movies/${id}`,
+        `https://film24-org-by-codevision.onrender.com/api/movies/${deleteId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setMsg(response?.data.message);
+      setMsg(response.data.message);
       fetchData();
     } catch (error) {
       setError(error);
+    }finally{
+      setIsModalOpen(false)
     }
   };
-
+  const openModel = (id: any) => {
+    setIsModalOpen(true);
+    setDeleteId(id)
+  };
   return (
-    <div className="text-white ">
-      <h1 className="text-xl font-semibold">Dash Board</h1>
-      {errorr && (
-        <Alert
-          severity="info"
-          onClose={() => {
-            setError(null);
-          }}
-        >
-          {errorr}
-        </Alert>
-      )}
-      {msg && (
-        <Alert
-          severity="info"
-          onClose={() => {
-            setMsg(null);
-          }}
-        >
-          {msg}
-        </Alert>
-      )}
-      <ul className="flex justify-evenly mt-5">
-        <li className="flex gap-2">
-          <h1>Total Movies</h1>
-          <p>{totalMovies}</p>
-        </li>
-        <li className="flex gap-2">
-          <h1>Total Categories</h1>
-          <p>{totalCategories}</p>
-        </li>
-        <li className="flex gap-2">
-          <h1>Total Users</h1>
-          <p>{totalUsers}</p>
-        </li>
-      </ul>
+    <div className="text-white relative">
+      <h1 className="text-xl font-semibold">Movies List</h1>
+      <div className="absolute top-0 right-0">
+        {errorr && (
+          <Alert
+            severity="info"
+            onClose={() => {
+              setError(null);
+            }}
+          >
+            {errorr}
+          </Alert>
+        )}
+        {msg && (
+          <Alert
+            severity="info"
+            onClose={() => {
+              setMsg(null);
+            }}
+          >
+            {msg}
+          </Alert>
+        )}
+      </div>
       <div className="mt-5 rounded overflow-hidden">
-        {data || loading ? (
+        {data || !loading ? (
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -205,19 +166,27 @@ export default function Dashboard() {
                         <BiDotsVerticalRounded />
                       </button>
                       {modalOpenIndex === index && (
-                        <div className="absolute top-2 w-8 h-[80%] -left-[5px] bg-white/70">
+                        <div className="absolute top-2 h-[80%] -left-[5px]">
                           <div className="flex h-full justify-around items-center flex-col">
                             <button
-                              onClick={() => handleDelete(row.id)}
-                              className="bg-red-500 h-2/5 w-[80%]"
+                              // onClick={() => handleDelete(row.id)}
+                              onClick={() => openModel(row.id)}
+                              className="bg-red-500 w-7 h-5 text-center rounded"
+
                             >
                               D
                             </button>
+                            
                             <Link
-                              to={`./edit/${row.id}`}
-                              className="bg-green-500 w-[80%] h-2/5"
+                              to={`/profile/dashboard/edit/${row.id}`}
+                              className="w-full h-1/2"
+                              // className="bg-green-500 w-[80%] h-2/5"
                             >
-                              E
+                              <button
+                                className="bg-green-500 w-7 h-5 text-center rounded"
+                              >
+                                E
+                              </button>
                             </Link>
                           </div>
                         </div>
@@ -227,18 +196,28 @@ export default function Dashboard() {
                 ))}
               </TableBody>
             </Table>
+            <Modal
+              open={isModalOpen}
+              title="Do you Want to delete these items?"
+              onOk={() => setIsModalOpen(false)}
+              onCancel={() => setIsModalOpen(false)}
+              footer={[
+                <Button color="primary" onClick={() => setIsModalOpen(false)}>
+                  Cancel
+                </Button>,
+                <Button
+                  key="back"
+                  color="error"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>,
+              ]}
+            ></Modal>
           </TableContainer>
         ) : (
           <Loader />
         )}
-
-        <button
-          onClick={() => {
-            console.log(data);
-          }}
-        >
-          <div className="absolute">click</div>
-        </button>
       </div>
     </div>
   );

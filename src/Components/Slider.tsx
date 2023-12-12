@@ -48,8 +48,8 @@ export default function Slider() {
           effect={"fade"}
           modules={[EffectFade, Autoplay]}
           autoplay={{
-            delay: 550,
-            disableOnInteraction: false,
+            delay: 3000,
+            disableOnInteraction: true,
           }}
           className="mySwiper"
           

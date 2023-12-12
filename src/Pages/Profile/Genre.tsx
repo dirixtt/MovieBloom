@@ -13,8 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../Components/Loader";
 import moment from "moment";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import {Button, TextField } from "@mui/material";
-export default function Genre() {
+import { Button, TextField } from "@mui/material";
+export default function Users() {
   const [loading, setLoading] = useState<boolean>(false);
   const [creat, setCreat] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);

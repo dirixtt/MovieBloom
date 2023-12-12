@@ -11,10 +11,10 @@ const initialState: category = {
 };
 
 export const loginSlice = createSlice({
-  name: "Category",
+  name: "Categories",
   initialState: initialState,
   reducers: {
-    category: (state, action) => {
+    Categories: (state, action) => {
       state.categ = action.payload;
     },
     categoryFail: (state, action) => {
@@ -23,6 +23,6 @@ export const loginSlice = createSlice({
   },
 });
 
-export const { category, categoryFail } = loginSlice.actions;
+export const { Categories, categoryFail } = loginSlice.actions;
 
 export default loginSlice.reducer;

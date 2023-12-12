@@ -3,12 +3,15 @@ import { Link, NavLink } from "react-router-dom";
 import { BsPerson } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import FetchUser from "../hooks/FetchUser";
+
 
 export default function Header() {
   const likes: any = useSelector((state: any) => state.count);
   const userToken = localStorage.getItem("token") || null;
   const [isLogged, setIsLogged] = useState<boolean>(userToken ? true : false);
   const [search, setSearch] = useState<string>("");
+  const { user } = FetchUser();
 
   const activeLink =
     "bg-red-500/10 px-3 duration-300 h-full flex rounded-md justify-center items-center";
@@ -63,11 +66,12 @@ export default function Header() {
             </NavLink>
             <NavLink to="" className="relative">
               <BiSolidHeart />
-              <p className="text-sm absolute top-1/2 left-5">{likes.count}</p>
+              <p className="text-sm absolute top-1/2 left-5">{user?.likedMovies ? user?.likedMovies.length : 0}</p>
             </NavLink>
             <NavLink
-              to=""
+              to="/search"
               className="flex items-center overflow-hidden group relative"
+
             >
               <BiSearchAlt2 />
             </NavLink>

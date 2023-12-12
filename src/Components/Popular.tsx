@@ -42,12 +42,12 @@ export default function Popular() {
   const swiperRef1 = useRef;
 
   return (
-    <div className=" text-white my-14 ">
+    <div className=" text-white container ">
       <Link
         to="/popular"
-        className="text-3xl font-semibold m-auto container flex font-sans "
+        className="text-3xl mt-10 font-semibold flex font-sans "
       >
-        Popular movies <IoIosArrowForward className="text-lg mt-3.5 ml-2" />{" "}
+        Popular movies <IoIosArrowForward className="text-lg mt-3.5 " />{" "}
       </Link>
       <div className="relative ">
         <Swiper
@@ -64,7 +64,7 @@ export default function Popular() {
           onBeforeInit={(swiper) => {
             swiperRef1.current = swiper;
           }}
-          className="h-[570px] px-[60px] flex items-center"
+          className="h-[570px] flex items-center"
           modules={[Navigation, Autoplay]} // Add Autoplay module here
         >
           {popular.map((movie: Movie, index: number) => (

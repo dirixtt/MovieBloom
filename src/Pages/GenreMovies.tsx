@@ -91,7 +91,7 @@ console.log(data)
   };
   return (
     <div>
-      <Header />
+      
       <div className="container my-14">
         <h1 className="my-10 text-2xl text-white font-medium">
           Total{" "}

@@ -20,10 +20,10 @@ export default function Tv() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://film24-org-by-codevision.onrender.com/api/movies`
+          `https://film24-org-by-codevision.onrender.com/api/movies/rated/top`
         );
-
-        setPopular(response.data.movies);
+          console.log(response.data)
+        setPopular(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

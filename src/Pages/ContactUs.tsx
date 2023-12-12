@@ -5,7 +5,7 @@ import { CiLocationOn, CiMail } from "react-icons/ci";
 export default function ContactUs() {
   return (
     <div>
-      <Header />
+      
       <div className="text-white flex flex-col my-32 justify-center items-center">
         <div className="flex justify-center flex-col items-center">
           <h1 className="text-4xl font-serif ">Contact Us</h1>
