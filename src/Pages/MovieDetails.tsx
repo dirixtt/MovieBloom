@@ -7,7 +7,26 @@ import Footer from "../Components/Footer";
 import { AiFillStar } from "react-icons/ai";
 import { Alert } from "@mui/material";
 import { BiHeart } from "react-icons/bi";
-
+const ReviewItem = ({ userName, rating, comment }: any) => (
+  <div className="my-5 bg-[#333333] py-1 px-2" key={userName}>
+    <div className="flex items-center gap-2">
+      <h6 className="text-sm">{userName}:</h6>
+      <div className="flex">
+        {[...Array(5)].map((_, number) => (
+          <AiFillStar
+            key={number}
+            className={`text-2xl ${
+              rating && rating >= number ? "text-yellow-400" : "text-gray-300"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+    <div className="flex">
+      <p>{comment}</p>
+    </div>
+  </div>
+);
 export default function MovieDetails() {
   const { id } = useParams(); // Access the 'id' parameter from the URL
   const [details, setDetails] = useState<Details>();
@@ -39,22 +58,21 @@ export default function MovieDetails() {
     year: string;
     rate: number;
   }
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `https://film24-org-by-codevision.onrender.com/api/movies/${id}`
+      );
+      setDetails(response.data);
+      console.log(response.data);
+
+      setLoading(false); // Set loading to false once data is fetched
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `https://film24-org-by-codevision.onrender.com/api/movies/${id}`
-        );
-        setDetails(response.data);
-        console.log(response.data);
-
-        setLoading(false); // Set loading to false once data is fetched
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     fetchData();
   }, [id]); // Include 'id' as a dependency so that it fetches data when 'id' changes
 
@@ -110,6 +128,8 @@ export default function MovieDetails() {
       setType("info");
       setMsg(error?.response.data.message);
       setLoading1(false);
+    } finally {
+      fetchData();
     }
   };
 
@@ -131,11 +151,11 @@ export default function MovieDetails() {
               <div className="relative rounded-xl overflow-hidden">
                 <img
                   className="h-[500px]  object-cover w-[350px]"
-                  src={details?.image.url}
+                  src={details?.image?.url}
                   alt=""
                 />
                 <button className="text-white text-xl top-0 right-0 shadow-md p-2 absolute bg-red-600">
-                  <BiHeart/>
+                  <BiHeart />
                 </button>
               </div>
               <div className="text-white text-md   ml-10">
@@ -163,14 +183,17 @@ export default function MovieDetails() {
                   <li>
                     Til:{" "}
                     <span className="mx-1">
-                      {details?.language.map((l: any) => l.name).join(", ")}
+                      {details?.language?.map((l: any) => l.name).join(", ")}
                     </span>
                   </li>
                   <li>
                     Taqdimot kuni: <span>{details?.year}</span>{" "}
                   </li>
                   <li>Baho: {details?.rate}</li>
-                  <li>Kategoriya: {details?.category[0].title}</li>
+                  <li>
+                    Kategoriya:{" "}
+                    {details?.category && details?.category[0]?.title}
+                  </li>
                 </ul>
               </div>
             </div>
@@ -193,8 +216,8 @@ export default function MovieDetails() {
                   <div className="flex flex-col justify-center">
                     <p className="flex ">{renderStars()}</p>
                     <p className="text-white/50">
-                      {value.rating
-                        ? `You rated: ${value.rating}/5`
+                      {value?.rating
+                        ? `You rated: ${value?.rating}/5`
                         : "Select a rating"}
                     </p>
                   </div>
@@ -220,28 +243,13 @@ export default function MovieDetails() {
               <div className="w-[45%]">
                 <h1>Reviews</h1>
                 <div>
-                  {details?.reviews.map((i: any) => (
-                    <div className="my-5 bg-[#333333] py-1 px-2  ">
-                      <div className="flex items-center gap-2">
-                        <h6 className="text-sm">{i.userName}:</h6>
-                        <div className="flex">
-                          {[...Array(5)].map((_, number) => (
-                            <AiFillStar
-                              key={i + 1}
-                              className={`text-2xl  ${
-                                i?.rating && i.rating >= number
-                                  ? "text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex">
-                        <p className="">{i.comment}</p>
-                      </div>
-                    </div>
-                  ))}
+                  {details?.reviews ? (
+                    details?.reviews.map((review: any) => (
+                      <ReviewItem key={review.userName} {...review} />
+                    ))
+                  ) : (
+                    <p>no reviews</p>
+                  )}
                 </div>
               </div>
             </div>

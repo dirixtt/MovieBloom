@@ -10,7 +10,7 @@ export default function Home() {
       {/* <Slider /> */}
       <MainMovies />
       {/* <Tv/> */}
-      <MoviesPagination/>
+      {/* <MoviesPagination/> */}
       <Footer />
     </div>
   );

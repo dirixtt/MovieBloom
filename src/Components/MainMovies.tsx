@@ -1,88 +1,319 @@
-import { useState } from "react";
-import Search, { SearchProps } from "antd/es/input/Search";
+import React, { useEffect, useState } from "react";
+import { Select } from "antd";
+import { Pagination } from "@mui/material";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import moment from "moment";
-import { FiFilter } from "react-icons/fi";
+import {  useSearchParams } from "react-router-dom";
+import qs from "qs";
+import Cards from "./Cards";
+import Search from "antd/es/input/Search";
 
-export default function MainMovies() {
-  const onSearch: SearchProps["onSearch"] = async (value, _e) => {
-    if (value.length > 0) {
-      await fetchData(value);
-    }
+const API_BASE_URL = "https://film24-org-by-codevision.onrender.com/api";
+const MOVIES_API_URL = `${API_BASE_URL}/movies`;
+const CATEGORIES_API_URL = `${API_BASE_URL}/categories`;
+const GENRES_API_URL = `${API_BASE_URL}/genres`;
+const LANGUAGES_API_URL = `${API_BASE_URL}/languages`;
+
+interface Category {
+  _id: number;
+  title: string;
+}
+
+interface Genre {
+  _id: number;
+  name: string;
+}
+
+interface Language {
+  _id: number;
+  name: string;
+}
+
+interface Movie {
+  name: string;
+  original_title: string;
+  _id: number;
+  release_date: string;
+  image: any;
+}
+
+const getFilterFromQuery = (query: string): any => {
+  const params = qs.parse(query, { ignoreQueryPrefix: true });
+  return {
+    search: params.search || null,
+    category: params.category || null,
+    genre: params.genre || null,
+    rate: params.rate || null,
+    time: params.time || null,
+    year: params.year || null,
+    language: params.language || null,
   };
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setMovies] = useState<any>();
-  interface Movie {
-    name: string;
-    original_title: string;
-    _id: number;
-    release_date: string;
-    image: any;
-  }
-  const fetchData = async (value: string) => {
+};
+
+const MainMovies: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [filters, setFilters] = useState({
+    search: null,
+    category: null,
+    genre: null,
+    rate: null,
+    time: null,
+    year: null,
+    language: null,
+  });
+  const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
+  const [movies, setMovies] = useState<Movie[] | null>(null);
+  const [categories, setCategories] = useState<Category[] | null>(null);
+  const [languages, setLanguages] = useState<Language[] | null>(null);
+  const [genres, setGenres] = useState<Genre[] | null>(null);
+ 
+  const updateQueryParams = () => {
+    const nonEmptyFilters: any = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value !== null && value !== 'all')
+    );
+    
+    setSearchParams(nonEmptyFilters);
+  };
+
+
+  useEffect(() => {
+    updateQueryParams();
+  }, [filters]);
+  
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `https://film24-org-by-codevision.onrender.com/api/movies?search=${value}`
-      );
+      const params: Record<string, any> = {
+        pageNumber: page,
+        ...Object.fromEntries(searchParams.entries()), // Используем текущие параметры запроса
+      };
+
+      // Теперь params передаются напрямую в useSearchParams
+      setSearchParams(params);
+
+      // Проверяем каждый параметр и добавляем его к запросу только если он не "Выбрать все"
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== 'all') {
+          params[key] = value;
+        }
+      });
+
+      const response = await axios.get(MOVIES_API_URL, { params });
 
       setMovies(response.data.movies);
-      setLoading(false);
+      setTotalPages(response.data.pages);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
       setLoading(false);
     }
+  };
+  const getFilterParams = async () => {
+    try {
+      setLoading(true);
+      const [categoriesResponse, genresResponse, languageResponse] =
+        await Promise.all([
+          axios.get(CATEGORIES_API_URL),
+          axios.get(GENRES_API_URL),
+          axios.get(LANGUAGES_API_URL),
+        ]);
+
+      setCategories(categoriesResponse.data);
+      setGenres(genresResponse.data);
+      setLanguages(languageResponse.data);
+    } catch (error) {
+      console.error("Error fetching categories, genres, or languages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCategoryChange = (categoryId: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      category: categoryId === 'all' ? null : categoryId,
+    }));
+  };
+
+  const handleGenreChange = (genreId: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      genre: genreId === 'all' ? null : genreId,
+    }));
+  };
+
+  const handleRateChange = (rateId: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      rate: rateId === 'all' ? null : rateId,
+    }));
+  };
+
+  const handleTimeChange = (timeId: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      time: timeId === 'all' ? null : timeId,
+    }));
+  };
+
+  const handleYearChange = (date: any, dateString: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      year: dateString === 'all' ? null : dateString,
+    }));
+  };
+
+  const handleLanguageChange = (languageId: any) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      language: languageId === 'all' ? null : languageId,
+    }));
+  };
+  useEffect(() => {
+    fetchData();
+  }, [searchParams, page]);
+
+  useEffect(() => {
+    getFilterParams();
+  }, []);
+
+  useEffect(() => {
+    // При первоначальной загрузке страницы
+    const filterFromQuery: any = getFilterFromQuery(searchParams.toString());
+
+    // Set the filters and fetch data
+    setFilters(filterFromQuery);
+    fetchData();
+  }, []);
+
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (!loading) {
+      fetchData();
+    }
+  }, [page]);
+
+  const onSearch: (value: string) => void = (value) => {
+    if (value.length > 0) {
+      setSearchParams((prevParams) => ({
+        ...Object.fromEntries(prevParams.entries()),
+        search: value,
+      }));
+    }
+  };
+
+  const categoryOptions: any = categories || [];
+  const genreOptions: any = genres || [];
+  const rateOptions: any = Array.from({ length: 5 }, (_, index) => ({
+    label: index + 1,
+    value: index + 1,
+  }));
+  const timeOptions: any = [{ label: "All Times", value: null }];
+  const languageOptions = languages || [];
+  const yearOptions = Array.from(
+    new Set(movies?.map((movie: any) => movie?.year) || [])
+  );
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
   };
 
   return (
     <div className="container my-10">
+      <button onClick={() => console.log(yearOptions)}>click</button>
       <div className="flex gap-2 h-10 items-center">
         <Search
-          className=" bg-[#d9d9d9] rounded-md"
-          placeholder="input search text"
+          className="bg-[#d9d9d9] rounded-md"
+          placeholder="Input search text"
           onSearch={onSearch}
           size="large"
         />
       </div>
-      <div></div>
-      <div className="flex flex-wrap justify-between gap-y-10 ">
-        {loading
-          ? "Loading..."
-          : data &&
-            data?.map((movie: Movie, index: number) => (
-              <Link
-                to={`/movie/${movie._id}`}
-                className="text-white mt-10 flex flex-col items-center relative justify-center group shadow-2xl duration-200 w-[100px] xl:w-[220px] 2xl:w-[275px]"
-                key={index}
-              >
-                <img
-                  className="group-hover:shadow-[#505454] w-full duration-300 h-[215px] xl:h-[280px] 2xl:h-[320px] rounded-xl object-cover group-hover:scale-105 shadow-3xl"
-                  src={movie.image.url}
-                  alt=""
-                />
-                {/* <div className="w-full group-hover:bg-black/70 group-hover:scale-105 duration-300 h-[215px] xl:h-[280px] 2xl:h-[320px] rounded-xl absolute top-0"></div> */}
-                <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3  ">
-                  <div className="xl:text-[15px] 2xl:text-md">
-                    <p>
-                      Title:{" "}
-                      {movie.name
-                        ? movie.name.length >= 15
-                          ? movie.name.slice(0, 15) + "..."
-                          : movie.name
-                        : movie.original_title
-                        ? movie.original_title.length >= 15
-                          ? movie.original_title.slice(0, 15) + "..."
-                          : movie.original_title
-                        : "Unknown Title"}
-                    </p>
-
-                    <p>Date: {moment(movie.release_date).format("LL")}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
+      <div className="mt-4 gap-2 flex justify-between">
+        <Select
+          className="w-full"
+          size="large"
+          placeholder="Select category"
+          allowClear
+          onChange={handleCategoryChange}
+          value={filters.category}
+          options={categoryOptions.map((category: Category) => ({
+            label: category.title,
+            value: category._id,
+          }))}
+        />
+        <Select
+          className="w-full"
+          size="large"
+          placeholder="Select genre"
+          allowClear
+          onChange={handleGenreChange}
+          value={filters.genre}
+          options={genreOptions.map((genre: Genre) => ({
+            label: genre.name,
+            value: genre._id,
+          }))}
+        />
+        <Select
+          className="w-full"
+          size="large"
+          placeholder="Select rate"
+          allowClear
+          onChange={handleRateChange}
+          value={filters.rate}
+          options={rateOptions}
+        />
+        <Select
+          className="w-full"
+          size="large"
+          placeholder="Select time"
+          allowClear
+          onChange={handleTimeChange}
+          value={filters.time}
+          options={timeOptions}
+        />
+        <Select
+          className="w-full"
+          size="large"
+          placeholder="Select year"
+          allowClear
+          onChange={handleYearChange}
+          value={filters.year}
+          options={yearOptions.map((year: any) => ({
+            label: year,
+            value: year,
+          }))}
+        />
+        <Select
+          className="w-full"
+          size="large"
+          placeholder="Select language"
+          allowClear
+          onChange={handleLanguageChange}
+          value={filters.language}
+          options={languageOptions.map((language: any) => ({
+            label: language.name,
+            value: language._id,
+          }))}
+        />
+      </div>
+      <Cards movies={movies} loading={loading} />
+      <div className="w-full flex justify-center mt-5 text-white">
+        <Pagination
+          color="secondary"
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+        />
       </div>
     </div>
   );
-}
+};
+
+export default MainMovies;

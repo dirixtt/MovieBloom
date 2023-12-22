@@ -21,6 +21,7 @@
     "formik": "^2.4.5",
     "fs": "^0.0.1-security",
     "moment": "^2.29.4",
+    "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.10",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.8.2",
+    "@types/qs": "^6.9.10",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
