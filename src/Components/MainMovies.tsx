@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Select } from "antd";
 import { Pagination } from "@mui/material";
 import axios from "axios";
-import {  useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import qs from "qs";
 import Cards from "./Cards";
 import Search from "antd/es/input/Search";
@@ -68,20 +68,21 @@ const MainMovies: React.FC = () => {
   const [categories, setCategories] = useState<Category[] | null>(null);
   const [languages, setLanguages] = useState<Language[] | null>(null);
   const [genres, setGenres] = useState<Genre[] | null>(null);
- 
+
   const updateQueryParams = () => {
     const nonEmptyFilters: any = Object.fromEntries(
-      Object.entries(filters).filter(([_, value]) => value !== null && value !== 'all')
+      Object.entries(filters).filter(
+        ([_, value]) => value !== null && value !== "all" && value !== undefined
+      )
     );
-    
+
     setSearchParams(nonEmptyFilters);
   };
-
 
   useEffect(() => {
     updateQueryParams();
   }, [filters]);
-  
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -95,7 +96,7 @@ const MainMovies: React.FC = () => {
 
       // Проверяем каждый параметр и добавляем его к запросу только если он не "Выбрать все"
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== 'all') {
+        if (value !== "all") {
           params[key] = value;
         }
       });
@@ -133,42 +134,42 @@ const MainMovies: React.FC = () => {
   const handleCategoryChange = (categoryId: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      category: categoryId === 'all' ? null : categoryId,
+      category: categoryId === "all" ? null : categoryId,
     }));
   };
 
   const handleGenreChange = (genreId: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      genre: genreId === 'all' ? null : genreId,
+      genre: genreId === "all" ? null : genreId,
     }));
   };
 
   const handleRateChange = (rateId: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      rate: rateId === 'all' ? null : rateId,
+      rate: rateId === "all" ? null : rateId,
     }));
   };
 
   const handleTimeChange = (timeId: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      time: timeId === 'all' ? null : timeId,
+      time: timeId === "all" ? null : timeId,
     }));
   };
 
   const handleYearChange = (date: any, dateString: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      year: dateString === 'all' ? null : dateString,
+      year: dateString === "all" ? null : dateString,
     }));
   };
 
   const handleLanguageChange = (languageId: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      language: languageId === 'all' ? null : languageId,
+      language: languageId === "all" ? null : languageId,
     }));
   };
   useEffect(() => {
@@ -187,7 +188,6 @@ const MainMovies: React.FC = () => {
     setFilters(filterFromQuery);
     fetchData();
   }, []);
-
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -222,6 +222,7 @@ const MainMovies: React.FC = () => {
     value: number
   ) => {
     setPage(value);
+    console.log(page)
   };
 
   return (
@@ -243,10 +244,13 @@ const MainMovies: React.FC = () => {
           allowClear
           onChange={handleCategoryChange}
           value={filters.category}
-          options={categoryOptions.map((category: Category) => ({
-            label: category.title,
-            value: category._id,
-          }))}
+          options={[
+            { label: "Выбрать все", value: "all" },
+            ...categoryOptions.map((category: Category) => ({
+              label: category.title,
+              value: category._id,
+            })),
+          ]}
         />
         <Select
           className="w-full"
@@ -255,10 +259,13 @@ const MainMovies: React.FC = () => {
           allowClear
           onChange={handleGenreChange}
           value={filters.genre}
-          options={genreOptions.map((genre: Genre) => ({
-            label: genre.name,
-            value: genre._id,
-          }))}
+          options={[
+            { label: "Выбрать все", value: "all" },
+            ...genreOptions.map((genre: Genre) => ({
+              label: genre.name,
+              value: genre._id,
+            })),
+          ]}
         />
         <Select
           className="w-full"
@@ -267,7 +274,7 @@ const MainMovies: React.FC = () => {
           allowClear
           onChange={handleRateChange}
           value={filters.rate}
-          options={rateOptions}
+          options={[{ label: "Выбрать все", value: "all" }, ...rateOptions]}
         />
         <Select
           className="w-full"
@@ -276,7 +283,7 @@ const MainMovies: React.FC = () => {
           allowClear
           onChange={handleTimeChange}
           value={filters.time}
-          options={timeOptions}
+          options={[{ label: "Выбрать все", value: "all" }, ...timeOptions]}
         />
         <Select
           className="w-full"
@@ -285,10 +292,13 @@ const MainMovies: React.FC = () => {
           allowClear
           onChange={handleYearChange}
           value={filters.year}
-          options={yearOptions.map((year: any) => ({
-            label: year,
-            value: year,
-          }))}
+          options={[
+            { label: "Выбрать все", value: "all" },
+            ...yearOptions.map((year: any) => ({
+              label: year,
+              value: year,
+            })),
+          ]}
         />
         <Select
           className="w-full"
@@ -297,10 +307,13 @@ const MainMovies: React.FC = () => {
           allowClear
           onChange={handleLanguageChange}
           value={filters.language}
-          options={languageOptions.map((language: any) => ({
-            label: language.name,
-            value: language._id,
-          }))}
+          options={[
+            { label: "Выбрать все", value: "all" },
+            ...languageOptions.map((language: any) => ({
+              label: language.name,
+              value: language._id,
+            })),
+          ]}
         />
       </div>
       <Cards movies={movies} loading={loading} />
