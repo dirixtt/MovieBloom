@@ -15,7 +15,7 @@ export default function Edit() {
   const [msg, setMsg] = useState<any>();
   const [category, setCategorys] = useState<any>();
   const [languages, setLanguages] = useState<any>();
-  const [ganres, setGanres] = useState<any>();
+  const [genres, setGanres] = useState<any>();
   const movieid = useParams().id;
   const [errorr, setError] = useState<any>(null);
   const [formValues, setFormValues] = useState<any>({
@@ -223,8 +223,8 @@ export default function Edit() {
     console.log(validation);
     return valid;
   };
-  const genresOpt: SelectProps["options"] = ganres
-    ? ganres.map((i: any) => ({
+  const genresOpt: SelectProps["options"] = genres
+    ? genres.map((i: any) => ({
         label: i.name, // Extract label from i.name
         value: i._id, // Extract value from i._id
       }))
@@ -255,7 +255,7 @@ export default function Edit() {
       : undefined;
   return (
     <div>
-      {movieid && category && languages && ganres ? (
+      {movieid && category && languages && genres ? (
         <div
           className={`bg-[#ffffff]  flex flex-col items-center container py-5 w-full h-[80%] ${
             loading ? "cursor-progress" : ""
@@ -359,7 +359,6 @@ export default function Edit() {
           </form>
           <div>
             <p>{errorr?.response.data.message}</p>
-            <button onClick={() => console.log(selectedTags)}>click</button>
           </div>
           <div className="absolute top-3 right-6">
             {msg && (

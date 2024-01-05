@@ -85,11 +85,11 @@ export default function UpdateProfile() {
               <h1 className="text-white text-xl font-semibold">Profile</h1>
               <div>
                 <div className="mt-5">
-                  <ul className="flex justify-between w-[80%]">
+                  <ul className="flex flex-col md:flex-row justify-between md:w-[80%]">
                     <li>
                       <h1 className="text-white font-light">Full Name</h1>
                       <Field
-                        className="bg-[#63636371] outline-none mt-2 h-10 w-[300px] text-white px-3 py-1 rounded border"
+                        className="bg-[#63636371] outline-none mt-2 h-10 md:w-[300px] text-white px-3 py-1 rounded border"
                         name="fullName"
                         type="text"
                       />
@@ -102,7 +102,7 @@ export default function UpdateProfile() {
                     <li>
                       <h1 className="text-white font-light">Email</h1>
                       <Field
-                        className="bg-[#63636371] outline-none h-10 mt-2 w-[300px] text-white px-3 py-1 rounded border"
+                        className="bg-[#63636371] outline-none h-10 mt-2 md:w-[300px] text-white px-3 py-1 rounded border"
                         name="email"
                         type="email"
                       />
@@ -113,7 +113,7 @@ export default function UpdateProfile() {
                       />
                     </li>
                   </ul>
-                  <div className="w-[80%] flex gap-7 justify-end">
+                  <div className="md:w-[80%] flex-col md:flex-row  md:text-xl text-sm flex gap-7 justify-end">
                     <button
                       onClick={handleDelete}
                       className="bg-red-700 active:scale-95 duration-150 shadow-xl text-white h-10 px-3 rounded mt-5"

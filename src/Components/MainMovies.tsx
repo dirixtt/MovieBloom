@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Select } from "antd";
 import { Pagination } from "@mui/material";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import qs from "qs";
 import Cards from "./Cards";
 import Search from "antd/es/input/Search";
+import { useDispatch, useSelector } from "react-redux";
+import { updateParams } from "../reducers/Params";
+import { Categories } from "../reducers/categories";
+import { genre } from "../reducers/genre";
 
 const API_BASE_URL = "https://film24-org-by-codevision.onrender.com/api";
 const MOVIES_API_URL = `${API_BASE_URL}/movies`;
@@ -49,18 +53,21 @@ const getFilterFromQuery = (query: string): any => {
   };
 };
 
+interface Params {
+  search: string | null;
+  category: string | null;
+  genre: string | null;
+  rate: string | null;
+  time: string | null;
+  year: string | null;
+  language: string | null;
+}
+
 const MainMovies: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [filters, setFilters] = useState({
-    search: null,
-    category: null,
-    genre: null,
-    rate: null,
-    time: null,
-    year: null,
-    language: null,
-  });
+  const { query } = useSelector((state: any) => state.params);
+  console.log(query);
+  const [filters, setFilters] = useState<Params>(query);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
@@ -70,47 +77,60 @@ const MainMovies: React.FC = () => {
   const [genres, setGenres] = useState<Genre[] | null>(null);
 
   const updateQueryParams = () => {
-    const nonEmptyFilters: any = Object.fromEntries(
-      Object.entries(filters).filter(
-        ([_, value]) => value !== null && value !== "all" && value !== undefined
-      )
-    );
+    if (filters !== null) {
+      const nonEmptyFilters: any = Object.fromEntries(
+        Object.entries(filters).filter(
+          ([_, value]) =>
+            value !== null && value !== "all" && value !== undefined
+        )
+      );
 
-    setSearchParams(nonEmptyFilters);
+      setSearchParams(nonEmptyFilters);
+    }
   };
 
   useEffect(() => {
     updateQueryParams();
   }, [filters]);
+  const dispatch = useDispatch();
 
-  const fetchData = async () => {
+  useEffect(() => {
+    dispatch(updateParams(filters));
+  }, [dispatch, filters]);
+
+  const cancelTokenSource = axios.CancelToken.source();
+
+  const fetchData = async (pageNumber: number) => {
     try {
       setLoading(true);
-      const params: Record<string, any> = {
-        pageNumber: page,
-        ...Object.fromEntries(searchParams.entries()), // Используем текущие параметры запроса
+
+      const params = {
+        pageNumber,
+        ...Object.fromEntries(searchParams.entries()),
+        ...query, // Use queryParams instead of query from Redux state
       };
 
-      // Теперь params передаются напрямую в useSearchParams
-      setSearchParams(params);
+      console.log("Request Parameters:", params);
 
-      // Проверяем каждый параметр и добавляем его к запросу только если он не "Выбрать все"
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== "all") {
-          params[key] = value;
-        }
+      const response = await axios.get(MOVIES_API_URL, {
+        params,
+        cancelToken: cancelTokenSource.token, // Use cancellation token
       });
-
-      const response = await axios.get(MOVIES_API_URL, { params });
 
       setMovies(response.data.movies);
       setTotalPages(response.data.pages);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      if (axios.isCancel(error)) {
+        // Request was cancelled
+        console.log("Request cancelled:", error.message);
+      } else {
+        console.error("Error fetching data:", error);
+      }
     } finally {
       setLoading(false);
     }
   };
+
   const getFilterParams = async () => {
     try {
       setLoading(true);
@@ -122,7 +142,9 @@ const MainMovies: React.FC = () => {
         ]);
 
       setCategories(categoriesResponse.data);
+      dispatch(Categories(categoriesResponse.data))
       setGenres(genresResponse.data);
+      dispatch(genre(genresResponse.data))
       setLanguages(languageResponse.data);
     } catch (error) {
       console.error("Error fetching categories, genres, or languages:", error);
@@ -136,13 +158,24 @@ const MainMovies: React.FC = () => {
       ...prevFilters,
       category: categoryId === "all" ? null : categoryId,
     }));
+  
+    updateUrl(categoryId, "category");
   };
+
+  useEffect(() => {
+    return () => {
+      // Cleanup function to cancel ongoing requests when the component is unmounted
+      cancelTokenSource.cancel("Component unmounted");
+    };
+  }, []);
 
   const handleGenreChange = (genreId: any) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       genre: genreId === "all" ? null : genreId,
     }));
+  
+    updateUrl(genreId, "genre");
   };
 
   const handleRateChange = (rateId: any) => {
@@ -172,29 +205,32 @@ const MainMovies: React.FC = () => {
       language: languageId === "all" ? null : languageId,
     }));
   };
+  const navigate = useNavigate();
+
+  const updateUrl = (value: any, filterName: string) => {
+    const currentSearch = new URLSearchParams(searchParams);
+    if (value === "all") {
+      currentSearch.delete(filterName);
+    } else {
+      currentSearch.set(filterName, value);
+    }
+
+    navigate(`/?${currentSearch.toString()}`);
+  };
+
   useEffect(() => {
-    fetchData();
-  }, [searchParams, page]);
+    fetchData(page);
+  }, [searchParams, page, query]);
 
   useEffect(() => {
     getFilterParams();
   }, []);
 
   useEffect(() => {
-    // При первоначальной загрузке страницы
     const filterFromQuery: any = getFilterFromQuery(searchParams.toString());
-
-    // Set the filters and fetch data
     setFilters(filterFromQuery);
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    if (!loading) {
-      fetchData();
-    }
-  }, [page]);
+    fetchData(page);
+  }, [searchParams, page]);
 
   const onSearch: (value: string) => void = (value) => {
     if (value.length > 0) {
@@ -202,6 +238,12 @@ const MainMovies: React.FC = () => {
         ...Object.fromEntries(prevParams.entries()),
         search: value,
       }));
+    } else {
+      setSearchParams((prevParams) => {
+        const newParams = { ...Object.fromEntries(prevParams.entries()) };
+        delete newParams.search; // Remove the 'search' parameter if the value is empty
+        return newParams;
+      });
     }
   };
 
@@ -222,100 +264,137 @@ const MainMovies: React.FC = () => {
     value: number
   ) => {
     setPage(value);
-    console.log(page)
+    fetchData(value);
   };
 
   return (
     <div className="container my-10">
-      <button onClick={() => console.log(yearOptions)}>click</button>
-      <div className="flex gap-2 h-10 items-center">
+      <div className="flex h-10 items-center">
         <Search
+          id="search"
           className="bg-[#d9d9d9] rounded-md"
           placeholder="Input search text"
           onSearch={onSearch}
           size="large"
         />
       </div>
-      <div className="mt-4 gap-2 flex justify-between">
-        <Select
-          className="w-full"
-          size="large"
-          placeholder="Select category"
-          allowClear
-          onChange={handleCategoryChange}
-          value={filters.category}
-          options={[
-            { label: "Выбрать все", value: "all" },
-            ...categoryOptions.map((category: Category) => ({
-              label: category.title,
-              value: category._id,
-            })),
-          ]}
-        />
-        <Select
-          className="w-full"
-          size="large"
-          placeholder="Select genre"
-          allowClear
-          onChange={handleGenreChange}
-          value={filters.genre}
-          options={[
-            { label: "Выбрать все", value: "all" },
-            ...genreOptions.map((genre: Genre) => ({
-              label: genre.name,
-              value: genre._id,
-            })),
-          ]}
-        />
-        <Select
-          className="w-full"
-          size="large"
-          placeholder="Select rate"
-          allowClear
-          onChange={handleRateChange}
-          value={filters.rate}
-          options={[{ label: "Выбрать все", value: "all" }, ...rateOptions]}
-        />
-        <Select
-          className="w-full"
-          size="large"
-          placeholder="Select time"
-          allowClear
-          onChange={handleTimeChange}
-          value={filters.time}
-          options={[{ label: "Выбрать все", value: "all" }, ...timeOptions]}
-        />
-        <Select
-          className="w-full"
-          size="large"
-          placeholder="Select year"
-          allowClear
-          onChange={handleYearChange}
-          value={filters.year}
-          options={[
-            { label: "Выбрать все", value: "all" },
-            ...yearOptions.map((year: any) => ({
-              label: year,
-              value: year,
-            })),
-          ]}
-        />
-        <Select
-          className="w-full"
-          size="large"
-          placeholder="Select language"
-          allowClear
-          onChange={handleLanguageChange}
-          value={filters.language}
-          options={[
-            { label: "Выбрать все", value: "all" },
-            ...languageOptions.map((language: any) => ({
-              label: language.name,
-              value: language._id,
-            })),
-          ]}
-        />
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+        <div>
+          <label htmlFor="category" className="text-white">
+            Kategoriyalar:
+          </label>
+          <Select
+            id="category"
+            className="w-full"
+            size="large"
+            placeholder="Kategoriya tanlang"
+            allowClear
+            onChange={handleCategoryChange}
+            value={filters?.category !== null ? filters?.category : undefined}
+            options={[
+              { label: "Выбрать все", value: "all" },
+              ...categoryOptions.map((category: Category) => ({
+                label: category.title,
+                value: category._id,
+              })),
+            ]}
+          />
+        </div>
+        <div>
+          <label htmlFor="genre" className="text-white">
+            Genre:
+          </label>
+          <Select
+            id="genre"
+            className="w-full"
+            size="large"
+            placeholder="Select genre"
+            allowClear
+            onChange={handleGenreChange}
+            value={filters?.genre || undefined}
+            options={[
+              { label: "Выбрать все", value: "all" },
+              ...genreOptions.map((genre: Genre) => ({
+                label: genre.name,
+                value: genre._id,
+              })),
+            ]}
+          />
+        </div>
+        <div>
+          <label htmlFor="rate" className="text-white">
+            Rate:
+          </label>
+          <Select
+            id="rate"
+            className="w-full"
+            size="large"
+            placeholder="Select rate"
+            allowClear
+            onChange={handleRateChange}
+            value={filters?.rate || undefined}
+            options={[{ label: "Выбрать все", value: "all" }, ...rateOptions]}
+          />
+        </div>
+        <div>
+          <label htmlFor="time" className="text-white">
+            Time:
+          </label>
+          <Select
+            id="time"
+            className="w-full"
+            size="large"
+            placeholder="Select time"
+            allowClear
+            onChange={handleTimeChange}
+            value={filters?.time || undefined}
+            options={[{ label: "Выбрать все", value: "all" }, ...timeOptions]}
+          />
+        </div>
+        <div>
+          <label htmlFor="year" className="text-white">
+            Year:
+          </label>
+          <Select
+            id="year"
+            className="w-full"
+            size="large"
+            placeholder="Select year"
+            allowClear
+            onChange={handleYearChange}
+            value={filters?.year || undefined}
+            options={[
+              { label: "Выбрать все", value: "all" },
+              ...yearOptions.map((year: any) => ({
+                label: year,
+                value: year,
+              })),
+            ]}
+          />
+        </div>
+        <div>
+          <label htmlFor="language" className="text-white">
+            Language:
+          </label>
+          <Select
+            id="language"
+            className="w-full"
+            size="large"
+            placeholder="Select language"
+            allowClear
+            onChange={handleLanguageChange}
+            value={filters?.language || undefined}
+            options={[
+              { label: "Выбрать все", value: "all" },
+              ...languageOptions.map((language: any) => ({
+                label: language.name,
+                value: language._id,
+              })),
+            ]}
+          />
+        </div>
       </div>
+
       <Cards movies={movies} loading={loading} />
       <div className="w-full flex justify-center mt-5 text-white">
         <Pagination

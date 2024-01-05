@@ -39,7 +39,7 @@ export default function Slider() {
     fetchData()
   });
   return (
-    <div className="bg-[#171818] mt-5 container  text-white">
+    <div className="bg-[#222831] mt-5 container  text-white">
       {movieData?.length > 0 || !loading ? (
         <Swiper
           spaceBetween={50}

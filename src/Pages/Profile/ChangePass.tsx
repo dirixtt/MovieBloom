@@ -66,46 +66,46 @@ const PasswordChangeForm = () => {
 
           <Form className="flex flex-col mt-5 gap-2">
             <label htmlFor="oldPassword">Old Password</label>
-            <div className="flex items-center">
+            <div className="flex md:w-[300px] relative items-center">
               <Field
                 type={showConfirm ? "text" : "password"}
                 name="oldPassword"
-                className="bg-[#63636371] outline-none h-10 mb-3 mt-2 w-[300px] text-white px-3 py-1 rounded-e-none rounded border border-e-0"
+                className="bg-[#63636371] w-full outline-none h-10 mb-3 mt-2 md:w-[300px] text-white px-3 py-1  rounded border "
                 placeholder="********"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="text-white px-2 rounded-e border-l-0 bg-[#63636371] border h-10 mb-3 mt-2 "
+                className="text-white absolute right-2 px-2h-10 mb-3 mt-2 "
               >
                 {showConfirm ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
             {errors?.oldPassword && touched?.oldPassword ? (
-              <div className="bg-red-200/90 text-red-700 rounded px-1.5 w-[335px] flex items-center gap-1">
+              <div className="bg-red-200/90 text-red-700 rounded px-1.5 md:w-[300px] flex items-center gap-1">
                 {errors.oldPassword}
               </div>
             ) : null}
 
             <label htmlFor="newPassword">New Password</label>
-            <div className="flex items-center">
+            <div className="flex relative md:w-[300px] items-center">
               <Field
                 type={showPass ? "text" : "password"}
                 name="newPassword"
-                className="bg-[#63636371] outline-none h-10 mb-3 mt-2 w-[300px] text-white px-3 py-1 rounded-e-none rounded border border-e-0"
+                className="bg-[#63636371] outline-none h-10 mb-3 mt-2 w-full text-white px-3 py-1 rounded border "
                 placeholder="********"
               />
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
-                className="text-white px-2 rounded-e border-l-0 bg-[#63636371] border h-10 mb-3 mt-2 "
+                className="text-white absolute right-2 h-10 mb-3 mt-2 "
               >
                 {showPass ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
 
             {errors?.newPassword && touched?.newPassword ? (
-              <div className="bg-red-200/90 text-red-700 rounded px-1.5 w-[335px] flex items-center gap-1">
+              <div className="bg-red-200/90 text-red-700 rounded px-1.5 md:w-[300px] flex items-center gap-1">
                 {errors.newPassword}
               </div>
             ) : null}
@@ -115,12 +115,12 @@ const PasswordChangeForm = () => {
               <Field
                 type="password"
                 name="confirm"
-                className="bg-[#63636371] outline-none h-10 mb-3 mt-2 w-[335px] text-white px-3 py-1 rounded border"
+                className="bg-[#63636371] outline-none h-10 mb-3 mt-2 md:w-[335px] text-white px-3 py-1 rounded border"
                 placeholder="******"
               />
             </div>
             {errors?.confirm && touched?.confirm ? (
-              <div className="bg-red-200/90 text-red-700 rounded px-1.5 w-[335px] flex items-center gap-1">
+              <div className="bg-red-200/90 text-red-700 rounded px-1.5 md:w-[300px] flex items-center gap-1">
                 {errors.confirm}
               </div>
             ) : null}

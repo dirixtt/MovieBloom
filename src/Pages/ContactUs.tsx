@@ -34,7 +34,7 @@ export default function ContactUs() {
           </li>
         </ul>
       </div>
-      <Footer />
+      
     </div>
   );
 }

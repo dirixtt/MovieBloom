@@ -120,7 +120,7 @@ export default function Movies() {
                   alt=""
                 />
                 {/* <div className="w-full group-hover:bg-black/70 group-hover:scale-105 duration-300 h-[215px] xl:h-[280px] 2xl:h-[320px] rounded-xl absolute top-0"></div> */}
-                <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3 bg-[#171818] ">
+                <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3 bg-[#222831] ">
                   <div className="xl:text-[15px] 2xl:text-md">
                     <p>
                       Title:{" "}
@@ -161,7 +161,7 @@ export default function Movies() {
           </button>
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 }

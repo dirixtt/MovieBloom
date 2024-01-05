@@ -11,11 +11,22 @@ import Profile from "./Pages/Profile";
 import Register from "./Pages/Sign/Register";
 import Search from "./Pages/Search";
 import Header from "./Components/Header";
-export default function App() {
+import Footer from "./Components/Footer";
 
+export default function App() {
   return (
     <BrowserRouter>
-       <HeaderWithConditionalRendering />
+      <AppContent />
+    </BrowserRouter>
+  );
+}
+
+function AppContent() {
+  const shouldRenderHeaderAndFooter = HeaderAndFooterConditionalRendering();
+
+  return (
+    <>
+      {shouldRenderHeaderAndFooter && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
@@ -29,13 +40,15 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
-    </BrowserRouter>
+      {shouldRenderHeaderAndFooter && <Footer />}
+    </>
   );
 }
-function HeaderWithConditionalRendering() {
-  const location = useLocation();
-  const hideHeaderRoutes = ["/login", "/register"];
-  const isHeaderHidden = hideHeaderRoutes.includes(location.pathname);
 
-  return !isHeaderHidden && <Header />;
+function HeaderAndFooterConditionalRendering() {
+  const location = useLocation();
+  const excludeRoutes = ["/login", "/register"];
+  const shouldRender = !excludeRoutes.includes(location.pathname);
+
+  return shouldRender;
 }

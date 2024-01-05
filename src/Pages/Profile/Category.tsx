@@ -14,6 +14,7 @@ import Loader from "../../Components/Loader";
 import moment from "moment";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import {Button, TextField } from "@mui/material";
+import { BsClipboard2 } from "react-icons/bs";
 export default function Category() {
   const [loading, setLoading] = useState<boolean>(false);
   const [creat, setCreat] = useState<boolean>(false);
@@ -167,6 +168,32 @@ export default function Category() {
     console.log(filtered._id);
     setName(filtered.title);
   };
+
+
+  const handleCopyClick = (id:any) => {
+    // Create a temporary input element
+    const tempInput = document.createElement('input');
+    
+    // Assign the ID to the input element's value
+    tempInput.value = id;
+    
+    // Append the input element to the DOM
+    document.body.appendChild(tempInput);
+    
+    // Select the text in the input element
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    // Copy the selected text to the clipboard
+    document.execCommand('copy');
+    
+    // Remove the temporary input element from the DOM
+    document.body.removeChild(tempInput);
+    
+    // You can provide some feedback to the user (optional)
+    alert(`ID ${id} copied to clipboard!`);
+  };
+
   return (
     <>
       {!loading ? (
@@ -215,7 +242,7 @@ export default function Category() {
                       key={row.id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell align="left">{row.id}</TableCell>
+                      <TableCell onClick={() => handleCopyClick(row.id)} align="left"><p className="cursor-pointer flex gap-1 items-center duration-200 w-min py-1 px-2 rounded hover:bg-white/20">...{row.id.slice(-6)}<BsClipboard2/></p></TableCell>
                       <TableCell align="left">{row.date}</TableCell>
                       <TableCell align="left">{row.updated}</TableCell>
                       <TableCell align="left">{row.title}</TableCell>

@@ -155,21 +155,21 @@ export default function Dashboard() {
         </Alert>
       )}
       <ul className="flex justify-evenly mt-5">
-        <li className="flex gap-2">
+        <li className="flex bg-[#333] border p-4 rounded gap-2">
           <h1>Total Movies</h1>
           <p>{totalMovies}</p>
         </li>
-        <li className="flex gap-2">
+        <li className="flex bg-[#333] border p-4 rounded gap-2">
           <h1>Total Categories</h1>
           <p>{totalCategories}</p>
         </li>
-        <li className="flex gap-2">
+        <li className="flex bg-[#333] border p-4 rounded gap-2">
           <h1>Total Users</h1>
           <p>{totalUsers}</p>
         </li>
       </ul>
       <div className="mt-5 rounded overflow-hidden">
-        {data || loading ? (
+        {data || !loading ? (
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -232,13 +232,6 @@ export default function Dashboard() {
           <Loader />
         )}
 
-        <button
-          onClick={() => {
-            console.log(data);
-          }}
-        >
-          <div className="absolute">click</div>
-        </button>
       </div>
     </div>
   );

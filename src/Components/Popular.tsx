@@ -78,7 +78,7 @@ export default function Popular() {
                   src={`${movie.image.url}`}
                   alt=""
                 />
-                <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3 bg-[#171818] ">
+                <div className="group-hover:shadow-[#505454] flex flex-col justify-center items-center shadow-3xl group-hover:scale-105 rounded-xl duration-500 h-[100px] w-full mt-5 p-3 bg-[#222831] ">
                   <div>
                     <p>
                       Title:{" "}

@@ -66,16 +66,16 @@ export default function Login() {
   console.log(UserData);
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="w-[60%] flex h-[70%] bg-gray-500 rounded-xl overflow-hidden m-auto">
-        <div className="w-[40%] h-full bg-white">
+      <div className="md:w-[60%] w-[90%] flex-col xl:flex-row flex md:h-[70%] bg-gray-500 rounded-xl overflow-hidden m-auto">
+        <div className="md:w-[40%] h-[150px] md:h-full bg-white">
           <img
-            className="object-cover h-full"
+            className="object-cover w-full h-full"
             src="https://avatars.mds.yandex.net/get-kinopoisk-image/10900341/a53caaa1-1b72-414b-a72b-4052b86fa2fe/384x384"
             alt=""
           />
         </div>
 
-        <div className="w-[60%] p-5 flex flex-col items-center">
+        <div className="md:w-[60%] p-5 flex flex-col items-center">
           <Formik
             initialValues={formValues}
             validationSchema={SignupSchema}
@@ -86,7 +86,7 @@ export default function Login() {
             }}
           >
             {({ isSubmitting }) => (
-              <Form className="flex rounded-xl mt-10 bg-white p-5 w-[80%] flex-col">
+              <Form className="flex rounded-xl mt-10 bg-white p-5 md:w-[80%] flex-col">
                 
                 <label htmlFor="email">Email</label>
                 <Field
